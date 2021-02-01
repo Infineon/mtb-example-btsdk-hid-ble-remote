@@ -1,10 +1,10 @@
 /*
- * Copyright 2016-2020, Cypress Semiconductor Corporation or a subsidiary of
- * Cypress Semiconductor Corporation. All Rights Reserved.
+ * Copyright 2016-2021, Cypress Semiconductor Corporation (an Infineon company) or
+ * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
  *
  * This software, including source code, documentation and related
- * materials ("Software"), is owned by Cypress Semiconductor Corporation
- * or one of its subsidiaries ("Cypress") and is protected by and subject to
+ * materials ("Software") is owned by Cypress Semiconductor Corporation
+ * or one of its affiliates ("Cypress") and is protected by and subject to
  * worldwide patent protection (United States and foreign),
  * United States copyright laws and international treaty provisions.
  * Therefore, you may use this Software only as provided in the license
@@ -13,7 +13,7 @@
  * If no EULA applies, Cypress hereby grants you a personal, non-exclusive,
  * non-transferable license to copy, modify, and compile the Software
  * source code solely for use in connection with Cypress's
- * integrated circuit products. Any reproduction, modification, translation,
+ * integrated circuit products.  Any reproduction, modification, translation,
  * compilation, or representation of this Software except as specified
  * above is prohibited without the express written permission of Cypress.
  *
@@ -42,6 +42,42 @@
 #include "app.h"
 #include "wiced_bt_uuid.h"
 #include "wiced_bt_sdp_defs.h"
+
+#ifdef FASTPAIR_ENABLE
+#include "wiced_bt_gfps.h"
+
+/* MODEL-specific definitions */
+ #if defined(CYW20721B2) || defined(CYW43012C0)
+  #define FASTPAIR_MODEL_ID                   0x82DA6E
+ #else
+  #define FASTPAIR_MODEL_ID                   0xCE948F //0xB49236 //0x000107 //0x140A02 // 0xCE948F
+ #endif
+
+ #if (FASTPAIR_MODEL_ID == 0x82DA6E)
+const uint8_t anti_spoofing_public_key[] =  { 0x95, 0xcf, 0xdb, 0xae, 0xc0, 0xef, 0xc5, 0x1f, 0x39, 0x0f, 0x2a, 0xe0, 0x16, 0x5a, 0x2b, 0x59,\
+		                                      0x62, 0xb2, 0xfe, 0x82, 0xfa, 0xf0, 0xd4, 0x1e, 0xa3, 0x4f, 0x07, 0x7e, 0xf7, 0x3d, 0xc0, 0x44,\
+		                                      0x3d, 0xd0, 0x38, 0xb2, 0x31, 0x5d, 0xc6, 0x45, 0x72, 0x8a, 0x08, 0x0e, 0xc7, 0x4f, 0xc7, 0x76,\
+		                                      0xd1, 0x19, 0xed, 0x8b, 0x17, 0x50, 0xb3, 0xa6, 0x94, 0x2e, 0xc8, 0x6b, 0xbb, 0x02, 0xc7, 0x4d };
+
+const uint8_t anti_spoofing_private_key[] = { 0x84, 0xee, 0x67, 0xc3, 0x67, 0xea, 0x57, 0x38, 0xa7, 0x7e, 0xe2, 0x4d, 0x68, 0xaa, 0x9c, 0xf0,\
+                                              0xc7, 0x9f, 0xc8, 0x07, 0x7e, 0x4e, 0x20, 0x35, 0x4c, 0x15, 0x43, 0x4d, 0xb5, 0xd2, 0xd1, 0xc3 };
+
+ #elif (FASTPAIR_MODEL_ID == 0xCE948F)
+const uint8_t anti_spoofing_public_key[] =  { 0x0e, 0xe2, 0xbf, 0xe7, 0x96, 0xc6, 0xe1, 0x13, 0xf6, 0x57, 0x4a, 0xa8, 0x8c, 0x3a, 0x1b, 0x9c,\
+                                              0x67, 0x1e, 0x36, 0xdf, 0x62, 0x69, 0xd8, 0xe5, 0x07, 0xe6, 0x8a, 0x72, 0x66, 0x4c, 0x9c, 0x90,\
+                                              0xfc, 0xff, 0x00, 0x4f, 0x0f, 0x95, 0xde, 0x63, 0xe1, 0xc0, 0xbb, 0xa0, 0x75, 0xb1, 0xd2, 0x76,\
+                                              0xfd, 0xe9, 0x66, 0x25, 0x0d, 0x45, 0x43, 0x7d, 0x5b, 0xf9, 0xce, 0xc0, 0xeb, 0x11, 0x03, 0xbe };
+
+const uint8_t anti_spoofing_private_key[] = { 0x71, 0x11, 0x42, 0xb5, 0xe4, 0xa0, 0x6c, 0xa2, 0x8b, 0x74, 0xd4, 0x87, 0x7d, 0xac, 0x15, 0xc5,\
+                                              0x42, 0x38, 0x1d, 0xb7, 0xba, 0x21, 0x19, 0x60, 0x17, 0x67, 0xfc, 0xba, 0x67, 0x47, 0x44, 0xc6 };
+
+ #else
+const uint8_t anti_spoofing_public_key[] =  "";
+const uint8_t anti_spoofing_private_key[] = "";
+ #warning "No Anti-Spooging key"
+
+ #endif
+#endif //FASTPAIR_ENABLE
 
 #define blehid_app_gatts_req_read_callback  android_gatts_req_read_callback
 #define blehid_app_gatts_req_write_callback android_gatts_req_write_callback
@@ -182,6 +218,17 @@ typedef enum
     HANDLE_APP_IMMEDIATE_ALERT_SERVICE = 0x90,            // 0x90 service handle
         HANDLE_APP_IMMEDIATE_ALERT_SERVICE_CHAR_LEVEL,    // 0x91 characteristic handle
         HANDLE_APP_IMMEDIATE_ALERT_SERVICE_CHAR_LEVEL_VAL,// 0x92 char value handle
+
+    HANDLE_APP_FASTPAIR_SERVICE = 0x100,
+        HANDLE_APP_FASTPAIR_SERVICE_CHAR_KEY_PAIRING,
+        HANDLE_APP_FASTPAIR_SERVICE_CHAR_KEY_PAIRING_VAL,
+        HANDLE_APP_FASTPAIR_SERVICE_CHAR_KEY_PAIRING_CFG_DESC,
+        HANDLE_APP_FASTPAIR_SERVICE_CHAR_PASSKEY,
+        HANDLE_APP_FASTPAIR_SERVICE_CHAR_PASSKEY_VAL,
+        HANDLE_APP_FASTPAIR_SERVICE_CHAR_PASSKEY_CFG_DESC,
+        HANDLE_APP_FASTPAIR_SERVICE_CHAR_ACCOUNT_KEY,
+        HANDLE_APP_FASTPAIR_SERVICE_CHAR_ACCOUNT_KEY_VAL,
+        HANDLE_APP_FASTPAIR_SERVICE_CHAR_ACCOUNT_KEY_CFG_DESC,
 
 }HANDLE_APP_t;
 
@@ -818,6 +865,41 @@ uint8_t blehid_db_data[]=
     ),
 #endif // SUPPORTING_FINDME
 
+#ifdef FASTPAIR_ENABLE
+    // Declare Fast Pair service
+    PRIMARY_SERVICE_UUID16 (HANDLE_APP_FASTPAIR_SERVICE, WICED_BT_GFPS_UUID16),
+
+    CHARACTERISTIC_UUID16_WRITABLE (HANDLE_APP_FASTPAIR_SERVICE_CHAR_KEY_PAIRING,
+                                    HANDLE_APP_FASTPAIR_SERVICE_CHAR_KEY_PAIRING_VAL,
+                                    WICED_BT_GFPS_UUID_CHARACTERISTIC_KEY_PAIRING,
+                                    LEGATTDB_CHAR_PROP_WRITE | LEGATTDB_CHAR_PROP_NOTIFY,
+                                    LEGATTDB_PERM_READABLE | LEGATTDB_PERM_WRITE_REQ),
+
+    CHAR_DESCRIPTOR_UUID16_WRITABLE(HANDLE_APP_FASTPAIR_SERVICE_CHAR_KEY_PAIRING_CFG_DESC,
+                                    UUID_DESCRIPTOR_CLIENT_CHARACTERISTIC_CONFIGURATION,
+                                    LEGATTDB_PERM_AUTH_READABLE | LEGATTDB_PERM_WRITE_REQ),
+
+    CHARACTERISTIC_UUID16_WRITABLE (HANDLE_APP_FASTPAIR_SERVICE_CHAR_PASSKEY,
+                                    HANDLE_APP_FASTPAIR_SERVICE_CHAR_PASSKEY_VAL,
+                                    WICED_BT_GFPS_UUID_CHARACTERISTIC_PASSKEY,
+                                    LEGATTDB_CHAR_PROP_WRITE | LEGATTDB_CHAR_PROP_NOTIFY,
+                                    LEGATTDB_PERM_READABLE | LEGATTDB_PERM_WRITE_REQ),
+
+    CHAR_DESCRIPTOR_UUID16_WRITABLE(HANDLE_APP_FASTPAIR_SERVICE_CHAR_PASSKEY_CFG_DESC,
+                                    UUID_DESCRIPTOR_CLIENT_CHARACTERISTIC_CONFIGURATION,
+                                    LEGATTDB_PERM_AUTH_READABLE | LEGATTDB_PERM_WRITE_REQ),
+
+    CHARACTERISTIC_UUID16_WRITABLE (HANDLE_APP_FASTPAIR_SERVICE_CHAR_ACCOUNT_KEY,
+                                    HANDLE_APP_FASTPAIR_SERVICE_CHAR_ACCOUNT_KEY_VAL,
+                                    WICED_BT_GFPS_UUID_CHARACTERISTIC_ACCOUNT_KEY,
+                                    LEGATTDB_CHAR_PROP_WRITE,
+                                    LEGATTDB_PERM_READABLE | LEGATTDB_PERM_WRITE_REQ),
+
+    CHAR_DESCRIPTOR_UUID16_WRITABLE(HANDLE_APP_FASTPAIR_SERVICE_CHAR_ACCOUNT_KEY_CFG_DESC,
+                                    UUID_DESCRIPTOR_CLIENT_CHARACTERISTIC_CONFIGURATION,
+                                    LEGATTDB_PERM_AUTH_READABLE | LEGATTDB_PERM_WRITE_REQ),
+#endif
+
 #ifdef ANDROID_AUDIO
     // Handle 0xfe00: Android TV Voice Service
     PRIMARY_SERVICE_UUID128
@@ -1411,6 +1493,69 @@ static void BLE_transportStateChangeNotification(uint32_t newState)
     app_transportStateChangeNotification(newState);
 }
 
+#ifdef FASTPAIR_ENABLE
+ #define BLE_setupPairingData() BLE_init_fast_pair()
+/*
+ * Initiate Google Fast Pair Service Provider
+ */
+static void BLE_init_fast_pair(void)
+{
+    wiced_bt_gfps_provider_conf_t fastpair_conf = {0};
+    static wiced_bt_ble_advert_elem_t app_adv_elem;
+
+    /* set Tx power level data type in ble advertisement */
+ #if defined(CYW20719B2) || defined(CYW20721B2) || defined(CYW20819A1) || defined (CYW20820A1)
+    fastpair_conf.ble_tx_pwr_level = wiced_bt_cfg_settings.default_ble_power_level;
+ #else
+    fastpair_conf.ble_tx_pwr_level = 0;
+ #endif
+
+    /* set assigned handles for GATT attributes */
+    fastpair_conf.gatt_db_handle.key_pairing_val        = HANDLE_APP_FASTPAIR_SERVICE_CHAR_KEY_PAIRING_VAL;
+    fastpair_conf.gatt_db_handle.key_pairing_cfg_desc   = HANDLE_APP_FASTPAIR_SERVICE_CHAR_KEY_PAIRING_CFG_DESC;
+    fastpair_conf.gatt_db_handle.passkey_val            = HANDLE_APP_FASTPAIR_SERVICE_CHAR_PASSKEY_VAL;
+    fastpair_conf.gatt_db_handle.passkey_cfg_desc       = HANDLE_APP_FASTPAIR_SERVICE_CHAR_PASSKEY_CFG_DESC;
+    fastpair_conf.gatt_db_handle.account_key_val        = HANDLE_APP_FASTPAIR_SERVICE_CHAR_ACCOUNT_KEY_VAL;
+
+    /* model id */
+    fastpair_conf.model_id = FASTPAIR_MODEL_ID;
+
+    /* anti-spoofing public key */
+    memcpy((void *) &fastpair_conf.anti_spoofing_key.public[0],
+           (void *) &anti_spoofing_public_key[0],
+           WICED_BT_GFPS_ANTI_SPOOFING_KEY_LEN_PUBLIC);
+
+    /* anti-spoofing private key */
+    memcpy((void *) &fastpair_conf.anti_spoofing_key.private[0],
+           (void *) &anti_spoofing_private_key[0],
+           WICED_BT_GFPS_ANTI_SPOOFING_KEY_LEN_PRIVATE);
+
+    /* Account Key Filter generate format */
+    fastpair_conf.account_key_filter_generate_random = WICED_TRUE;;
+
+    /* Account Key list size */
+    fastpair_conf.account_key_list_size = FASTPAIR_ACCOUNT_KEY_NUM;
+
+    /* NVRAM id for Account Key list */
+    fastpair_conf.account_key_list_nvram_id = VS_ID_GFPS_ACCOUNT_KEY;
+
+    /* BLE advertisement data appended to fast pair advertisement data */
+    app_adv_elem.advert_type    = BTM_BLE_ADVERT_TYPE_NAME_COMPLETE;
+    app_adv_elem.len            = sizeof(BT_LOCAL_NAME)-1;
+    app_adv_elem.p_data         = (uint8_t *)dev_local_name;
+
+    fastpair_conf.appended_adv_data.p_elem      = &app_adv_elem;
+    fastpair_conf.appended_adv_data.elem_num    = 1;
+
+    /* Initialize Google Fast Pair Service. */
+    if (hidd_gatts_gfps_init(&fastpair_conf) == WICED_FALSE)
+    {
+        WICED_BT_TRACE("wiced_bt_gfps_provider_init fail\n");
+    }
+}
+
+#else
+ #define BLE_setupPairingData() BLE_setUpAdvData()
 /********************************************************************************
  * Function Name: void BLE_setUpAdvData(void)
  ********************************************************************************
@@ -1452,6 +1597,7 @@ static void BLE_setUpAdvData(void)
 
     wiced_bt_ble_set_raw_advertisement_data(4, app_adv_elem);
 }
+#endif
 
 /********************************************************************************
  * Function Name: uint16_t ble_get_cccd_flag(CLIENT_CONFIG_NOTIF_T idx)
@@ -1510,7 +1656,7 @@ void ble_init()
                      blehid_gattAttributes, blehid_gattAttributes_size,
                      blehid_app_gatts_req_read_callback, blehid_app_gatts_req_write_callback);
 
-    BLE_setUpAdvData();
+    BLE_setupPairingData();
 
     //timer to request connection param update
     wiced_init_timer( &ble.conn_param_update_timer, BLE_connparamupdate_timeout, 0, WICED_MILLI_SECONDS_TIMER );
