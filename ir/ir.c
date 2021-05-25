@@ -241,11 +241,10 @@ static void appirtx_irtx_handler()
 ////////////////////////////////////////////////////////////////
 ///  call back function when IR frame transmit is completed
 ////////////////////////////////////////////////////////////////
-static BOOL8 appirtx_irtx_complete(IR_TX_STATE state)
+static void appirtx_irtx_complete(IR_TX_STATE state)
 {
     WICED_BT_TRACE("\nIR Done");
     appirtx_irtx_handler();
-    return FALSE; // let handler to continue (not used for irtx_complete)
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -286,7 +285,8 @@ void ir_init(BYTE gpio)
     WICED_BT_TRACE("\nIR init %d", gpio);
 
     wiced_irtx_hook_callback(NULL, NULL, appirtx_irtx_complete);
-    wiced_irtx_init(gpio);
+    wiced_irtx_setIrTxPortPin(gpio/GPIO_MAX_PINS_PER_PORT, gpio%GPIO_MAX_PINS_PER_PORT);
+    wiced_irtx_init();
 
     // If this is a power on reset, we need to wait for hardware to get ready before we can send IR
     wiced_init_timer( &ir.allow_irtx_timer, appirtx_check_pending, 0, WICED_MILLI_SECONDS_TIMER );

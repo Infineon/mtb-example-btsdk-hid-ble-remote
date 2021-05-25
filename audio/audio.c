@@ -42,20 +42,21 @@
 #ifdef SUPPORT_AUDIO
 #include "wiced.h"
 #include "wiced_bt_trace.h"
-#include "hidd_lib.h"
 #include "app.h"
 
 /////////////////////////////////////////////////////////////////////////////////
-#define AUDIO_FIFO_CNT    4  // 30 in android_o_remote
+#define AUDIO_FIFO_CNT    20  // 30 in atv_o_remote
 
 #define AUDIO_START_DELAY_IN_MS         100    // wait for 100 ms to start send audio data
 #define AUDIO_ADC_GAIN_IN_DB            30     // Audio ADC Gain in dB, When DRC is disabled 21 dB is recommended
-#define AUDIO_MODE (audio.sendMsg ? WICED_HIDD_AUDIO_BUTTON_SEND_MSG : WICED_HIDD_AUDIO_BUTTON_SEND_PCM)
+#define AUDIO_MODE (audio.sendMsg ? HIDD_AUDIO_BUTTON_SEND_MSG : HIDD_AUDIO_BUTTON_SEND_PCM)
 
 // Digital MIC port defines: PDM_CLK and PDM_DATA should defined in platform. If it is not defined, we will define it here
 #ifndef PDM_CLK
-#define PDM_CLK     WICED_P17
-#define PDM_DATA    WICED_P15
+#define PDM_CLK     WICED_P27
+#endif
+#ifndef PDM_DATA
+#define PDM_DATA    WICED_P26
 #endif
 
 typedef struct
@@ -89,15 +90,15 @@ hidd_microphone_enhanced_config_t blehid_audiocfg =
 {
     //# audio enc type: 0=PCM, 1=mSBC, 2=OPUS CELT, 3=ADPCM
 #ifdef ADPCM_ENCODER
-    .audioEncType = WICED_HIDD_AUDIO_ENC_TYPE_ADPCM,
+    .audioEncType = HIDD_AUDIO_ENC_TYPE_ADPCM,
 #else
  #ifdef CELT_ENCODER
-    .audioEncType = WICED_HIDD_AUDIO_ENC_TYPE_CELT,
+    .audioEncType = HIDD_AUDIO_ENC_TYPE_CELT,
  #else
   #ifdef SBC_ENCODER
-    .audioEncType = WICED_HIDD_AUDIO_ENC_TYPE_mSBC,
+    .audioEncType = HIDD_AUDIO_ENC_TYPE_mSBC,
   #else
-    .audioEncType = WICED_HIDD_AUDIO_ENC_TYPE_PCM,
+    .audioEncType = HIDD_AUDIO_ENC_TYPE_PCM,
   #endif
  #endif
 #endif
@@ -155,10 +156,8 @@ hidd_microphone_enhanced_config_t blehid_audiocfg =
 #endif
 };
 
-//extern hidd_microphone_enhanced_config_t blehid_audiocfg;
-
 // data defines
-uint8_t             voice_rpt[AUDIO_BUFF_LEN] = {};
+uint8_t             voice_rpt[AUDIO_MTU_SIZE] = {};
 hidd_voice_report_t audioData[AUDIO_FIFO_CNT] = {};
 uint16_t            dataCount[AUDIO_FIFO_CNT] = {};
 hidd_microphone_config_t audioConfig = {
@@ -169,9 +168,9 @@ hidd_microphone_config_t audioConfig = {
     .fifo_count = AUDIO_FIFO_CNT,
     .audio_gain = AUDIO_ADC_GAIN_IN_DB,
 #ifdef ANDROID_AUDIO
-    .codec_sampling_freq = WICED_HIDD_CODEC_SAMP_FREQ_8K,
+    .codec_sampling_freq = HIDD_CODEC_SAMP_FREQ_8K,
 #else
-    .codec_sampling_freq = WICED_HIDD_CODEC_SAMP_FREQ_16K,
+    .codec_sampling_freq = HIDD_CODEC_SAMP_FREQ_16K,
 #endif
     .enable = TRUE,
     .audio_boost = TRUE,               // not used
@@ -227,7 +226,7 @@ void mic_stop_command_pending_timeout( uint32_t arg )
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-/// This function will be called from blehid_app_init() during start up.
+/// This function will be called from app_start() during start up.
 /////////////////////////////////////////////////////////////////////////////////////////////
 void audio_init(void (*activityDetectedPtr)())
 {
@@ -267,9 +266,9 @@ static void audio_send_data(uint8_t * ptr, uint16_t len)
 {
     memcpy(voice_rpt, ptr, len);
 #ifdef ANDROID_AUDIO
-    android_send_data(voice_rpt, len);
+    atv_send_data(voice_rpt, len);
 #else
-    hidd_blelink_send_report(WICED_HIDD_VOICE_REPORT_ID, WICED_HID_REPORT_TYPE_INPUT, voice_rpt, len);
+    hidd_blelink_send_report(HIDD_VOICE_REPORT_ID, WICED_HID_REPORT_TYPE_INPUT, voice_rpt, len);
 #endif
 }
 
@@ -283,16 +282,21 @@ void audio_procEvtVoice()
         hidd_voice_report_t * audioPtr = (hidd_voice_report_t *) audio.voiceEvent.userDataPtr;
         uint8_t audio_outData[DECODE_BUFF_SIZE];
         uint8_t * dataPtr = audio_outData;
+#ifdef ANDROID_AUDIO_1_0
+        uint16_t mtu_size = atv_supports_ver(1) ? AUDIO_MTU_SIZE : AUDIO_MTU_BASIC_SIZE;
+#else
+ #define mtu_size AUDIO_MTU_SIZE
+#endif
 
         uint16_t len = hidd_mic_audio_get_audio_out_data(audioPtr, dataPtr);
 
-        // as long as the size is larger than audio MTU size, we fragement the data
-        while (len >= AUDIO_MTU_SIZE)
+        // as long as the len is larger than audio MTU size, we fragement the data
+        while (len >= mtu_size)
         {
-            audio_send_data(dataPtr, AUDIO_MTU_SIZE);
-            dataPtr += AUDIO_MTU_SIZE;
-            len -= AUDIO_MTU_SIZE;
-        }
+            audio_send_data(dataPtr, mtu_size);
+            dataPtr += mtu_size;
+            len -= mtu_size;
+        };
         // if any remainding residual data, finish it up
         if (len)
         {
@@ -310,19 +314,16 @@ void audio_procEvtVoice()
 
 /////////////////////////////////////////////////////////////////////////////////
 /// This function handles start audio request
-///
-/// if we send host to request stop, when issue stop message to host.
-/// Otherwise, we just stop it.
 /////////////////////////////////////////////////////////////////////////////////
 void audio_start_request(void)
 {
 //    WICED_BT_TRACE("\nHID_EVENT_RC_MIC_START_REQ");
 #ifdef ANDROID_AUDIO
-    android_send_ctl(ATV_VOICE_SERVICE_START_SEARCH);
+    atv_send_ctl(ATV_VOICE_SERVICE_START_SEARCH);
 #else
     if (audio.sendMsg)
     {
-        audio_voiceCtlSend(WICED_HIDD_RC_MIC_START_REQ);
+        audio_voiceCtlSend(HIDD_RC_MIC_START_REQ);
     }
     else
     {
@@ -345,12 +346,12 @@ void audio_stop_request(void)
 {
 //    WICED_BT_TRACE("\nHID_EVENT_RC_MIC_STOP_REQ");
 #ifdef ANDROID_AUDIO
-    android_send_ctl(ATV_VOICE_SERVICE_AUDIO_STOP);
+    atv_send_ctl(ATV_VOICE_SERVICE_AUDIO_STOP);
     audio_stop();
 #else
     if (audio.sendMsg)
     {
-        audio_voiceCtlSend(WICED_HIDD_RC_MIC_STOP_REQ);
+        audio_voiceCtlSend(HIDD_RC_MIC_STOP_REQ);
     }
     else
     {
@@ -382,7 +383,7 @@ void audio_procEvent(uint8_t eventType)
  #endif
  #ifdef HID_AUDIO
     case HID_EVENT_AUDIO_MODE:
-        audio_voiceCtlSend(WICED_HIDD_RC_VOICEMODE_RD_ACK);
+        audio_voiceCtlSend(HIDD_RC_VOICEMODE_RD_ACK);
         break;
  #endif
     }
@@ -398,13 +399,15 @@ void audio_start(void)
     audio_flush_data();
 
 #ifdef ANDROID_AUDIO
-    android_send_ctl(ATV_VOICE_SERVICE_AUDIO_START);
+    atv_send_ctl(ATV_VOICE_SERVICE_AUDIO_START);
 #endif
 
     // audio is inactive, activate
     hidd_blelink_enable_poll_callback(WICED_FALSE); // disable polling and use audio interrupt
     hidd_mic_audio_set_active(WICED_TRUE);
     audio_pollActivityVoice();                      // kick off start poll
+
+    LED_AUDIO_ON();
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -421,34 +424,19 @@ void audio_stop(void)
     }
     wiced_stop_timer(&audio.mic_stop_command_pending_timer);
     hidd_blelink_enable_poll_callback(WICED_TRUE);      // re-enable back
+
+    LED_AUDIO_OFF();
 }
 
+#if HID_AUDIO
 /////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
 wiced_bool_t audio_button(uint8_t key, wiced_bool_t down)
 {
-#ifdef ANDROID_AUDIO
-    static wiced_bool_t audio_key_pressed = 0;
-#endif
-
-#ifdef ANDROID_AUDIO
-    if (audio_key_pressed)
-    {
-        audio_key_pressed = 0;
-        audio_START_REQ();
-    }
-#endif
-
     if (key == AUDIO_KEY_INDEX)
     {
         WICED_BT_TRACE("\naudio_button %s", down ? "down" : "up");
 
-#ifdef ANDROID_AUDIO
-        if (down)
-        {
-            audio_key_pressed = 1;
-        }
-#else // !ANDROID_AUDIO
         // button down
         if (down)
         {
@@ -473,10 +461,10 @@ wiced_bool_t audio_button(uint8_t key, wiced_bool_t down)
             }
         }
         return TRUE;
-#endif
     }
     return FALSE;
 }
+#endif
 
 /////////////////////////////////////////////////////////////////////////////////
 /// This function polls for voice activity and queues any events in the
@@ -489,7 +477,7 @@ void audio_pollActivityVoice(void)
     {
         while (hidd_mic_audio_poll_activity((void *)&audio.voiceEvent))
         {
-            WICED_BT_TRACE("a");
+//            WICED_BT_TRACE("a");
             audio_DATA();
         }
     }
@@ -498,34 +486,34 @@ void audio_pollActivityVoice(void)
 #ifdef HID_AUDIO
  #ifdef SUPPORT_AUDIO_REG_RD_WR
 /////////////////////////////////////////////////////////////////////////////////
-/// This function transmits the voice control report(WICED_HIDD_RC_CODECSETTINGS_RD_ACK)
+/// This function transmits the voice control report(HIDD_RC_CODECSETTINGS_RD_ACK)
 /////////////////////////////////////////////////////////////////////////////////
 void audio_voiceReadCodecSetting(void)
 {
     hidd_voice_control_report_t audioCodecRsp;
     memset(&audioCodecRsp, 0, sizeof(hidd_voice_control_report_t));
-    audioCodecRsp.reportId = WICED_HIDD_VOICE_CTL_REPORT_ID;
-    audioCodecRsp.format =  WICED_HIDD_RC_CODECSETTINGS_RD_ACK;
+    audioCodecRsp.reportId = HIDD_VOICE_CTL_REPORT_ID;
+    audioCodecRsp.format =  HIDD_RC_CODECSETTINGS_RD_ACK;
     audioCodecRsp.rsvd = AUDIO_MODE; // This information is saved in rxData
     if (hidd_mic_audio_read_codec_setting(&audioCodecRsp))
     {
         //set gatt attribute value here before sending the report
         memcpy(app_voice_ctrl_input_rpt, &audioCodecRsp.format, sizeof(hidd_voice_control_report_t) - sizeof(audioCodecRsp.reportId));
 
-        hidd_blelink_send_report(WICED_HIDD_VOICE_CTL_REPORT_ID,WICED_HID_REPORT_TYPE_INPUT,&audioCodecRsp.format,
+        hidd_blelink_send_report(HIDD_VOICE_CTL_REPORT_ID,WICED_HID_REPORT_TYPE_INPUT,&audioCodecRsp.format,
                 sizeof(hidd_voice_control_report_t) - sizeof(audioCodecRsp.reportId));
     }
 }
 
 /////////////////////////////////////////////////////////////////////////////////
-/// This function transmits the voice control report(WICED_HIDD_RC_CODECSETTINGS_WT_ACK)
+/// This function transmits the voice control report(HIDD_RC_CODECSETTINGS_WT_ACK)
 /////////////////////////////////////////////////////////////////////////////////
 void audio_voiceWriteCodecSetting(void)
 {
     hidd_voice_control_report_t audioCodecRsp;
     memset(&audioCodecRsp, 0, sizeof(hidd_voice_control_report_t));
-    audioCodecRsp.reportId = WICED_HIDD_VOICE_CTL_REPORT_ID;
-    audioCodecRsp.format = WICED_HIDD_RC_CODECSETTINGS_WT_ACK;
+    audioCodecRsp.reportId = HIDD_VOICE_CTL_REPORT_ID;
+    audioCodecRsp.format = HIDD_RC_CODECSETTINGS_WT_ACK;
 
     audioCodecRsp.rsvd = AUDIO_MODE;
     if (audio.codecSettingMsg_dataCnt > 0)
@@ -539,7 +527,7 @@ void audio_voiceWriteCodecSetting(void)
             //set gatt attribute value here before sending the report
             memcpy(app_voice_ctrl_input_rpt, &audioCodecRsp.format, sizeof(hidd_voice_control_report_t) - sizeof(audioCodecRsp.reportId));
 
-            hidd_blelink_send_report(WICED_HIDD_VOICE_CTL_REPORT_ID,WICED_HID_REPORT_TYPE_INPUT,&audioCodecRsp.format,
+            hidd_blelink_send_report(HIDD_VOICE_CTL_REPORT_ID,WICED_HID_REPORT_TYPE_INPUT,&audioCodecRsp.format,
                 sizeof(hidd_voice_control_report_t) - sizeof(audioCodecRsp.reportId));
         }
     }
@@ -547,19 +535,19 @@ void audio_voiceWriteCodecSetting(void)
  #endif // SUPPORT_AUDIO_REG_RD_WR
 
 /////////////////////////////////////////////////////////////////////////////////
-/// This function transmits the voice control report(WICED_HIDD_RC_VOICEMODE_RD_ACK)
+/// This function transmits the voice control report(HIDD_RC_VOICEMODE_RD_ACK)
 /////////////////////////////////////////////////////////////////////////////////
 void audio_voiceCtlSend(uint8_t eventType)
 {
     hidd_voice_control_report_t audioMsgReq;
     memset(&audioMsgReq, 0, sizeof(hidd_voice_control_report_t));
-    audioMsgReq.reportId = WICED_HIDD_VOICE_CTL_REPORT_ID;
+    audioMsgReq.reportId = HIDD_VOICE_CTL_REPORT_ID;
     audioMsgReq.format = eventType;
     audioMsgReq.rsvd = AUDIO_MODE; //put "audio mode" info in the reserved byte
 
     //set gatt attribute value here before sending the report
     memcpy(app_voice_ctrl_input_rpt, &audioMsgReq.format, sizeof(hidd_voice_control_report_t) - sizeof(audioMsgReq.reportId));
-    hidd_blelink_send_report(WICED_HIDD_VOICE_CTL_REPORT_ID,WICED_HID_REPORT_TYPE_INPUT,&audioMsgReq.format,
+    hidd_blelink_send_report(HIDD_VOICE_CTL_REPORT_ID,WICED_HID_REPORT_TYPE_INPUT,&audioMsgReq.format,
                         sizeof(hidd_voice_control_report_t) - sizeof(audioMsgReq.reportId));
 }
 
@@ -571,20 +559,20 @@ void audio_handleVoiceCtrlMsg(hidd_voice_control_report_t* voiceCtrlRpt)
 {
     switch( voiceCtrlRpt->format )
     {
-        case WICED_HIDD_MIC_START:
+        case HIDD_MIC_START:
             audio_START();
             break;
 
-        case WICED_HIDD_MIC_STOP:
+        case HIDD_MIC_STOP:
             audio_STOP();
             break;
 
  #ifdef SUPPORT_AUDIO_REG_RD_WR
-        case WICED_HIDD_RC_CODECSETTINGS_RD_REQ:
+        case HIDD_RC_CODECSETTINGS_RD_REQ:
             audio_CODEC_RD();
             break;
 
-        case WICED_HIDD_RC_CODECSETTINGS_WT_REQ:
+        case HIDD_RC_CODECSETTINGS_WT_REQ:
             {
                 uint8_t j;
                 audio.codecSettingMsg_type     = voiceCtrlRpt->rsvd;
@@ -597,14 +585,14 @@ void audio_handleVoiceCtrlMsg(hidd_voice_control_report_t* voiceCtrlRpt)
             }
             break;
  #endif // SUPPORT_AUDIO_REG_RD_WR
-        case WICED_HIDD_RC_VOICEMODE_RD_REQ:
+        case HIDD_RC_VOICEMODE_RD_REQ:
             audio_MODE_RD();
             break;
 
-        case WICED_HIDD_SPK_START:
-        case WICED_HIDD_SPK_STOP:
-        case WICED_HIDD_PHONECALL_START:
-        case WICED_HIDD_PHONECALL_STOP:
+        case HIDD_SPK_START:
+        case HIDD_SPK_STOP:
+        case HIDD_PHONECALL_START:
+        case HIDD_PHONECALL_STOP:
             default:
             break;
     }
@@ -694,7 +682,7 @@ wiced_bool_t audio_setReport(wiced_hidd_report_type_t reportType,
                      void *payload,
                      uint16_t payloadSize)
 {
-    if ((reportType == WICED_HID_REPORT_TYPE_FEATURE) && (reportId == WICED_HIDD_VOICE_CTL_REPORT_ID))
+    if ((reportType == WICED_HID_REPORT_TYPE_FEATURE) && (reportId == HIDD_VOICE_CTL_REPORT_ID))
     {
         hidd_voice_control_report_t* voiceCtrlRpt = (hidd_voice_control_report_t *)((uint8_t *)payload - 1);
 

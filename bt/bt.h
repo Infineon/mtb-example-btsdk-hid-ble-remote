@@ -265,12 +265,12 @@ enum bitmapped_key
 
 #ifdef HID_AUDIO
 #define AUDIO_LE_REPORT_DESCRIPTOR \
-    /*audio report, WICED_HIDD_VOICE_REPORT_ID */ \
+    /*audio report, HIDD_VOICE_REPORT_ID */ \
     0x05, 0x0C,                                         /* Usage Page (Consumer Devices) */ \
     0x09, 0x01,                                         /* Usage (Consumer Control) */ \
     0xA1, 0x01,                                         /* Collection (Application) */ \
     0x85, RPT_ID_IN_AUDIO_DATA,                         /*    Report ID */ \
-    0x96, AUDIO_MTU_SIZE & 0xff, AUDIO_MTU_SIZE >> 8,   /*    REPORT_COUNT (audio data size) */ \
+    0x96, AUDIO_DATA_SIZE & 0xff, AUDIO_DATA_SIZE >> 8, /*    REPORT_COUNT (audio data size) */ \
     0x75, 0x08,                                         /*    REPORT_SIZE (8) */ \
     0x15, 0x00,                                         /*    LOGICAL_MINIMUM (0) */ \
     0x26, 0xFF, 0x00,                                   /*    LOGICAL_MAXIMUM (255) */ \
@@ -278,7 +278,7 @@ enum bitmapped_key
     0xC0,                                               /* END_COLLECTION */
 
 #define AUDIO_BREDR_REPORT_DESCRIPTOR \
-    /*audio report, WICED_HIDD_VOICE_REPORT_ID */ \
+    /*audio report, HIDD_VOICE_REPORT_ID */ \
     0x05, 0x0C,                                         /* Usage Page (Consumer Devices) */ \
     0x09, 0x01,                                         /* Usage (Consumer Control) */ \
     0xA1, 0x01,                                         /* Collection (Application) */ \
@@ -288,7 +288,7 @@ enum bitmapped_key
     0x81, 0x00,                                         /*    INPUT (Data,Ary,Abs) */ \
     0x15, 0x00,                                         /*    LOGICAL_MINIMUM (0) */ \
     0x26, 0xFF, 0x00,                                   /*    LOGICAL_MAXIMUM (255) */ \
-    0x96, AUDIO_MTU_SIZE & 0xff, AUDIO_MTU_SIZE >> 8,   /*    REPORT_COUNT (audio data size) */ \
+    0x96, AUDIO_DATA_SIZE & 0xff, AUDIO_DATA_SIZE >> 8, /*    REPORT_COUNT (audio data size) */ \
     0x75, 0x08,                                         /*    REPORT_SIZE (8) */ \
     0x15, 0x00,                                         /*    LOGICAL_MINIMUM (0) */ \
     0x26, 0xFF, 0x00,                                   /*    LOGICAL_MAXIMUM (255) */ \
@@ -296,7 +296,7 @@ enum bitmapped_key
     0xC0,                                               /* END_COLLECTION */
 
 #define AUDIO_CTRL_REPORT_DESCRIPTOR \
-    /*voice ctrl report, WICED_HIDD_VOICE_CTL_REPORT_ID */ \
+    /*voice ctrl report, HIDD_VOICE_CTL_REPORT_ID */ \
     0x05, 0x0C,                    /* Usage Page (Consumer Devices) */ \
     0x09, 0x01,                    /* Usage (Consumer Control) */ \
     0xA1, 0x01,                    /* Collection (Application) */ \

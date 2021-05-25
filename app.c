@@ -125,6 +125,9 @@ static wiced_bool_t APP_connect_button(uint8_t keyCode, wiced_bool_t down)
 static void APP_keyDetected(HidEventKey* kbKeyEvent)
 {
     static uint8_t suppressEndScanCycleAfterConnectButton = TRUE;
+#if ANDROID_AUDIO
+    static uint8_t audio_key_down = FALSE;
+#endif
     uint8_t keyDown = kbKeyEvent->keyEvent.upDownFlag == KEY_DOWN;
     uint8_t keyCode = kbKeyEvent->keyEvent.keyCode;
 
@@ -138,9 +141,14 @@ static void APP_keyDetected(HidEventKey* kbKeyEvent)
 #endif
 
     // Check for buttons
-    if (!APP_connect_button(keyCode, keyDown) &&
-        !ir_button(keyCode, keyDown) &&
-        !audio_button(keyCode, keyDown))
+    if (!APP_connect_button(keyCode, keyDown)
+#ifdef SUPPORT_IR
+        && !ir_button(keyCode, keyDown)
+#endif
+#if HID_AUDIO
+        && !audio_button(keyCode, keyDown)
+#endif
+       )
     {
         // Check if this is an end-of-scan cycle event
         if (keyCode == END_OF_SCAN_CYCLE)
@@ -151,6 +159,13 @@ static void APP_keyDetected(HidEventKey* kbKeyEvent)
                 wiced_hidd_event_queue_add_event_with_overflow(&app.eventQueue, &kbKeyEvent->eventInfo, sizeof(HidEventKey), app.pollSeqn);
             }
 
+#if ANDROID_AUDIO
+            if (audio_key_down)
+            {
+                audio_key_down = FALSE;
+                audio_START_REQ();
+            }
+#endif
             // Enable end-of-scan cycle suppression since this is the start of a new cycle
             suppressEndScanCycleAfterConnectButton = TRUE;
         }
@@ -164,6 +179,12 @@ static void APP_keyDetected(HidEventKey* kbKeyEvent)
             // No. Queue the key event
             wiced_hidd_event_queue_add_event_with_overflow(&app.eventQueue, &kbKeyEvent->eventInfo, sizeof(HidEventKey), app.pollSeqn);
 
+#if ANDROID_AUDIO
+            if (keyCode == AUDIO_KEY_INDEX && keyDown)
+            {
+                audio_key_down = TRUE;
+            }
+#endif
             // Disable end-of-scan cycle suppression
             suppressEndScanCycleAfterConnectButton = FALSE;
         }
@@ -312,12 +333,12 @@ static void APP_shutdown(void)
 ///
 /// \return
 ///   Bit mapped value indicating
-///       - HID_APP_ACTIVITY_NON_REPORTABLE - if any key (excluding connect button) is down. Always
+///       - HIDLINK_ACTIVITY_NON_REPORTABLE - if any key (excluding connect button) is down. Always
 ///         set in pin code entry state
-///       - HID_APP_ACTIVITY_REPORTABLE - if any event is queued. Always
+///       - HIDLINK_ACTIVITY_REPORTABLE - if any event is queued. Always
 ///         set in pin code entry state
-///       - HID_APP_ACTIVITY_NONE otherwise
-///  As long as it is not ACTIVITY_NONE, the btlpm will be notified for low power management.
+///       - HIDLINK_ACTIVITY_NONE otherwise
+///  As long as it is not HIDLINK_ACTIVITY_NONE, the btlpm will be notified for low power management.
 ////////////////////////////////////////////////////////////////////////////////
 uint8_t APP_pollActivityUser(void)
 {
@@ -332,6 +353,7 @@ uint8_t APP_pollActivityUser(void)
     // For all other cases, return value indicating whether any event is pending or
     status = wiced_hidd_event_queue_get_num_elements(&app.eventQueue) || kscan_is_any_key_pressed() ? HIDLINK_ACTIVITY_REPORTABLE : HIDLINK_ACTIVITY_NONE;
 
+    audio_pollActivityVoice();
     touchpad_pollActivity(status);
 
     return status;
@@ -601,8 +623,8 @@ static void APP_hci_key_event(uint8_t keyCode, wiced_bool_t keyDown)
         case KEY_AUDIO:
             keyCode = AUDIO_KEY_INDEX;
             break;
-//      case KEY_MOTION:
-//            break;
+        case KEY_MOTION:          // ignored
+            break;
         case KEY_CONNECT:
             keyCode = CONNECT_KEY_INDEX;
             break;
@@ -751,8 +773,7 @@ void app_transportStateChangeNotification(uint32_t newState)
             touchpad->setEnable(TRUE);
         }
 #endif
-
-        hidd_blelink_enable_poll_callback(WICED_TRUE);
+        hidd_link_enable_poll_callback(BT_TRANSPORT_LE, WICED_TRUE);
 
         if(app.firstTransportStateChangeNotification)
         {
@@ -783,7 +804,7 @@ void app_transportStateChangeNotification(uint32_t newState)
         hidd_mic_audio_stop();
 #endif
         // Tell the transport to stop polling
-        hidd_blelink_enable_poll_callback(WICED_FALSE);
+        hidd_link_enable_poll_callback(BT_TRANSPORT_LE, WICED_FALSE);
         break;
 
     case HIDLINK_LE_DISCOVERABLE:

@@ -117,8 +117,8 @@ KbKeyConfig kbKeyConfig[] =
     {KEY_TYPE_BIT_MAPPED,       BITMAP_AC_HOME},    //#14, HOME
 
     // Column 3: order is row0 ->row4
-    {KEY_TYPE_STD,              USB_USAGE_0},       //#15, 0
-    {KEY_TYPE_BIT_MAPPED,       BITMAP_AC_SEARCH},  //#16, AUDIO
+    {KEY_TYPE_BIT_MAPPED,       BITMAP_AC_SEARCH},  //#15, AUDIO
+    {KEY_TYPE_STD,              USB_USAGE_0},       //#16, 0
     {KEY_TYPE_STD,              USB_USAGE_POWER},   //#17, PWR
     {KEY_TYPE_NONE,             0},                 //#18, Heart (discoverable)
     {KEY_TYPE_BIT_MAPPED,       BITMAP_AC_BACK},    //#19, EXIT
@@ -150,7 +150,6 @@ KbKeyConfig kbKeyConfig[] =
     {KEY_TYPE_STD,              0x66},  //#17, PWR
     {KEY_TYPE_NONE,                0},  //#18, Heart (discoverable)
     {KEY_TYPE_BIT_MAPPED,          0},  //#19, EXIT
-
   #endif
 #else // 7x7
     // Column 0:  order is row0 ->row6

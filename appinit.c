@@ -49,14 +49,10 @@
 static const wiced_bt_cfg_buf_pool_t wiced_bt_hid_cfg_buf_pools[WICED_BT_CFG_NUM_BUF_POOLS] =
 {
 /*  { buf_size, buf_count } */
-    { 64,       4   },      /* Small Buffer Pool */
+    { 64,       12  },      /* Small Buffer Pool */
     { 100,      30  },      /* Medium Buffer Pool (used for HCI & RFCOMM control messages, min recommended size is 360) */
-#ifdef CYW20735B1           // we need to allocate more buffer to ensure audio quality
-    { 300,      50  },      /* Large Buffer Pool  (used for HCI ACL messages) */
-#else                       // 208xx doesn't have enough RAM. audio quality is problematic
-    { 300,      12  },      /* Large Buffer Pool  (used for HCI ACL messages) */
-#endif
-    { 1024,      1  },      /* Extra Large Buffer Pool - Used for avdt media packets and miscellaneous (if not needed, set buf_count to 0) */
+    { 300,     100  },      /* Large Buffer Pool  (used for HCI ACL messages) */
+    { 1024,      2  },      /* Extra Large Buffer Pool - Used for avdt media packets and miscellaneous (if not needed, set buf_count to 0) */
 };
 
 /******************************************************************************
@@ -124,7 +120,11 @@ void application_start( void )
     WICED_BT_TRACE("\nENABLE_AUDIO(CELT)");
  #elif defined(ADPCM_ENCODER)
   #ifdef ANDROID_AUDIO
+   #ifdef ANDROID_AUDIO_1_0
     WICED_BT_TRACE("\nANDROID_AUDIO(ADPCM)");
+   #else
+    WICED_BT_TRACE("\nANDROID_AUDIO 0.4(ADPCM)");
+   #endif
   #else
     WICED_BT_TRACE("\nENABLE_AUDIO(ADPCM)");
   #endif
@@ -132,7 +132,7 @@ void application_start( void )
     WICED_BT_TRACE("\nENABLE_AUDIO(mSBC)");
  #endif
  #ifdef SUPPORT_DIGITAL_MIC
-    WICED_BT_TRACE("\nENABLE_DIGITAL_MIC");
+    WICED_BT_TRACE("\nPDM");
  #endif
 #endif
 
@@ -156,8 +156,8 @@ void application_start( void )
     WICED_BT_TRACE("\nDISCONNECTED_ENDLESS_ADV");
 #endif
 
-#ifdef ASSYM_SLAVE_LATENCY
-    WICED_BT_TRACE("\nASSYMETRIC_SLAVE_LATENCY");
+#ifdef ASSYM_PERIPHERAL_LATENCY
+    WICED_BT_TRACE("\nASSYMETRIC_PERIPHERAL_LATENCY");
 #endif
 
 #ifdef LE_LOCAL_PRIVACY_SUPPORT

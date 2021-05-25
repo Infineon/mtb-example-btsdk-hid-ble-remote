@@ -53,7 +53,7 @@
  void ir_start(uint8_t code, uint8_t repeat_count);
  void ir_stop();
  wiced_bool_t ir_button(uint8_t key, wiced_bool_t down);
- #define ir_is_active() (!wiced_irtx_is_available())
+ #define ir_is_active() (!wiced_irtx_isAvailable())
 #else
  #define ir_init(gpio)
  #define ir_start(code, repeat)

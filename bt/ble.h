@@ -71,6 +71,116 @@ typedef uint8_t CLIENT_CONFIG_NOTIF_T;
 #define APP_CLIENT_CONFIG_NOTIF_VOICE_CTRL_RPT       (1<<BLE_RPT_INDX_VOICE_CTRL)             // 0x020
 #define APP_CLIENT_CONFIG_NOTIF_TOUCHPAD_RPT         (1<<BLE_RPT_INDX_TOUCHPAD)               // 0x040
 
+/******************************************************************************
+ *                         handle Definitions
+ ******************************************************************************/
+typedef enum
+{
+    HANDLE_APP_GATT_SERVICE = 0x1, // service handle
+
+    HANDLE_APP_GAP_SERVICE = 0x14, // service handle
+        HANDLE_APP_GAP_SERVICE_CHAR_DEV_NAME, // 0x15 characteristic handl
+        HANDLE_APP_GAP_SERVICE_CHAR_DEV_NAME_VAL, // 0x16 char value handle
+
+        HANDLE_APP_GAP_SERVICE_CHAR_DEV_APPEARANCE, // 0x17 characteristic handl
+        HANDLE_APP_GAP_SERVICE_CHAR_DEV_APPEARANCE_VAL,// 0x18 char value handle
+
+        HANDLE_APP_GAP_SERVICE_CHAR_PERI_PREFER_CONNPARAM, // 0x19 characteristic handl
+        HANDLE_APP_GAP_SERVICE_CHAR_PERI_PREFER_CONNPARAM_VAL,// 0x1a char value handle
+
+    HANDLE_APP_DEV_INFO_SERVICE = 0x28,
+        HANDLE_APP_DEV_INFO_SERVICE_CHAR_PNP_ID, // 0x29 characteristic handle
+        HANDLE_APP_DEV_INFO_SERVICE_CHAR_PNP_ID_VAL,// 0x2a char value handle
+
+        HANDLE_APP_DEV_INFO_SERVICE_CHAR_MFR_NAME, // characteristic handle
+        HANDLE_APP_DEV_INFO_SERVICE_CHAR_MFR_NAME_VAL,// char value handle
+
+        HANDLE_APP_DEV_INFO_SERVICE_CHAR_FW_VER, // characteristic handle
+        HANDLE_APP_DEV_INFO_SERVICE_CHAR_FW_VER_VAL,// char value handle
+
+    HANDLE_APP_BATTERY_SERVICE = 0x30, // service handle
+        HANDLE_APP_BATTERY_SERVICE_CHAR_LEVEL, // characteristic handl
+        HANDLE_APP_BATTERY_SERVICE_CHAR_LEVEL_VAL, // char value handle
+        HANDLE_APP_BATTERY_SERVICE_CHAR_CFG_DESCR, // charconfig desc handl
+        HANDLE_APP_BATTERY_SERVICE_RPT_REF_DESCR, // char desc handl
+
+    HANDLE_APP_SCAN_PARAM_SERVICE = 0x40, // service handle
+        HANDLE_APP_SCAN_PARAM_SERVICE_CHAR_SCAN_INT_WINDOW, // characteristic handl
+        HANDLE_APP_SCAN_PARAM_SERVICE_CHAR_SCAN_INT_WINDOW_VAL, // char value handle
+
+    HANDLE_APP_LE_HID_SERVICE = 0x4F, // service handle
+        HANDLE_APP_LE_HID_SERVICE_INC_BAS_SERVICE,    // 0x50 include service
+
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_HID_CTRL_POINT,         // 0x51 characteristic handl
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_HID_CTRL_POINT_VAL,     // 0x52 char value handle
+
+        HANDLE_APP_LE_HID_SERVICE_HID_INFO,         // 0x53 characteristic handl
+        HANDLE_APP_LE_HID_SERVICE_HID_INFO_VAL,     // 0x54 char value handle
+
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_MAP,      // characteristic handl
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_MAP_VAL,  // char value handle
+
+        HANDLE_APP_LE_HID_SERVICE_EXT_RPT_REF_DESCR,// char desc handl
+
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_STD_INPUT=0x5D,                 // 0x5d characteristic handl
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_STD_INPUT_VAL,                  // 0x5e char value handle
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_STD_INPUT_CHAR_CFG_DESCR,       // 0x5f charconfig desc handl
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_STD_INPUT_RPT_REF_DESCR,        // 0x60 char desc handl
+
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_STD_OUTPUT,                     // 0x61 characteristic handl
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_STD_OUTPUT_VAL,                 // 0x62 char value handle
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_STD_OUTPUT_RPT_REF_DESCR,       // 0x63 char desc handl
+
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_BITMAP,                         // 0x64 characteristic handl
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_BITMAP_VAL,                     // 0x65 char value handle
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_BITMAP_CHAR_CFG_DESCR,          // 0x66 charconfig desc handl
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_BITMAP_RPT_REF_DESCR,           // 0x67 char desc handl
+
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_USER_DEFINED_0=0x6c,            // 0x6c characteristic handl
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_USER_DEFINED_0_VAL,             // 0x6d char value handle
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_USER_DEFINED_0_CHAR_CFG_DESCR,  // 0x6e charconfig desc handl
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_USER_DEFINED_0_RPT_REF_DESCR,   // 0x6f char desc handl
+
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_VOICE,                          // 0x70 characteristic handl
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_VOICE_VAL,                      // 0x71 char value handle
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_VOICE_CHAR_CFG_DESCR,           // 0x72 charconfig desc handl
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_VOICE_RPT_REF_DESCR,            // 0x73 char desc handl
+
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_VOICE_CTRL_INPUT,               // 0x74 characteristic handl
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_VOICE_CTRL_INPUT_VAL,           // 0x75 char value handle
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_VOICE_CTRL_INPUT_CHAR_CFG_DESCR,// 0x76 charconfig desc handl
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_VOICE_CTRL_INPUT_RPT_REF_DESCR, // 0x77 char desc handl
+
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_VOICE_CTRL_FEA,                 // 0x78 characteristic handl
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_VOICE_CTRL_FEA_VAL,             // 0x79 char value handle
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_VOICE_CTRL_FEA_RPT_REF_DESCR,   // 0x7a char desc handl
+
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_TOUCHPAD,                       // 0x7b characteristic handl
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_TOUCHPAD_VAL,                   // 0x7c char value handle
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_TOUCHPAD_CHAR_CFG_DESCR,        // 0x7d charconfig desc handl
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_TOUCHPAD_RPT_REF_DESCR,         // 0x7e char desc handl
+
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_CONNECTION_CTRL,                // 0x7f characteristic handl
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_CONNECTION_CTRL_VAL,            // 0x80 char value handle
+        HANDLE_APP_LE_HID_SERVICE_HID_RPT_CONNECTION_CTRL_RPT_REF_DESCR,  // 0x81 char desc handl
+
+    HANDLE_APP_IMMEDIATE_ALERT_SERVICE = 0x90,            // 0x90 service handle
+        HANDLE_APP_IMMEDIATE_ALERT_SERVICE_CHAR_LEVEL,    // 0x91 characteristic handle
+        HANDLE_APP_IMMEDIATE_ALERT_SERVICE_CHAR_LEVEL_VAL,// 0x92 char value handle
+
+    HANDLE_APP_FASTPAIR_SERVICE = 0x100,
+        HANDLE_APP_FASTPAIR_SERVICE_CHAR_KEY_PAIRING,
+        HANDLE_APP_FASTPAIR_SERVICE_CHAR_KEY_PAIRING_VAL,
+        HANDLE_APP_FASTPAIR_SERVICE_CHAR_KEY_PAIRING_CFG_DESC,
+        HANDLE_APP_FASTPAIR_SERVICE_CHAR_PASSKEY,
+        HANDLE_APP_FASTPAIR_SERVICE_CHAR_PASSKEY_VAL,
+        HANDLE_APP_FASTPAIR_SERVICE_CHAR_PASSKEY_CFG_DESC,
+        HANDLE_APP_FASTPAIR_SERVICE_CHAR_ACCOUNT_KEY,
+        HANDLE_APP_FASTPAIR_SERVICE_CHAR_ACCOUNT_KEY_VAL,
+        HANDLE_APP_FASTPAIR_SERVICE_CHAR_ACCOUNT_KEY_CFG_DESC,
+
+}HANDLE_APP_t;
+
 /*******************************************************************************
  * Function Name: wiced_bool_t ble_get_cccd_flag(CLIENT_CONFIG_NOTIF_T idx)
  ********************************************************************************

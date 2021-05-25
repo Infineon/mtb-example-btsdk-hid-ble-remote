@@ -51,19 +51,13 @@
 /*******************************************************************************
 * Types and Defines
 *******************************************************************************/
-#if defined(BLE_SUPPORT) && defined(BR_EDR_SUPPORT)
- #define BT_LOCAL_NAME "CY REMOTE"
-#elif defined(BLE_SUPPORT)
- #define BT_LOCAL_NAME "CY LE REMOTE"
-#else
- #define BT_LOCAL_NAME "CY BT REMOTE"
-#endif
+#define BT_LOCAL_NAME "CY REMOTE"
 
 #if is_20735Family
  #define NUM_KEYSCAN_ROWS    5  // Num of Rows in keyscan matrix
  #define NUM_KEYSCAN_COLS    4  // Num of Cols in keyscan matrix
  #define CONNECT_KEY_INDEX   18 // need to find out from hardware
- #define AUDIO_KEY_INDEX     16
+ #define AUDIO_KEY_INDEX     15
  #define IR_KEY_INDEX        17
 #else
  #define NUM_KEYSCAN_ROWS    7  // Num of Rows in keyscan matrix
@@ -73,18 +67,20 @@
  #define AUDIO_KEY_INDEX     23
  #if !defined(REMOTE_PLATFORM)
   #define FAKE_CONNECT_KEY_INDEX   8 // need to find out from hardware
-  #define FAKE_AUDIO_KEY_INDEX     16
+  #define FAKE_AUDIO_KEY_INDEX     15
  #endif
 #endif
 #define USE_TOUCHPAD_VIRTUAL_KEY 0
 
-#define LED_RED             WICED_PLATFORM_LED_1
-#define LED_GREEN           WICED_PLATFORM_LED_2
+#define LED_RED_IDX         WICED_PLATFORM_LED_2
+#define LED_GREEN_IDX       WICED_PLATFORM_LED_1
 
-#define LED_ERROR           LED_RED
-#define LED_LE_LINK         LED_GREEN
+#define LED_ERROR           LED_RED_IDX
+#define LED_LE_LINK         LED_GREEN_IDX
 
-typedef void (app_poll_callback_t)(void);
+#define LED_DEBUG(n)        hidd_led_blink(LED_RED_IDX, n, 100)
+#define LED_AUDIO_ON()      hidd_led_on(LED_RED_IDX)
+#define LED_AUDIO_OFF()     hidd_led_off(LED_RED_IDX)
 /*******************************************************************************
  * Report ID defines
  ********************************************************************************/
@@ -98,8 +94,8 @@ typedef enum {
     RPT_ID_IN_MEDIA_KEY    =0x0a,
     RPT_ID_IN_ABS_XY       =0x20,
     RPT_ID_IN_CNT_CTL      =0xcc,
-    RPT_ID_IN_AUDIO_DATA   =WICED_HIDD_VOICE_REPORT_ID,
-    RPT_ID_IN_AUDIO_CTL    =WICED_HIDD_VOICE_CTL_REPORT_ID,
+    RPT_ID_IN_AUDIO_DATA   =HIDD_VOICE_REPORT_ID,
+    RPT_ID_IN_AUDIO_CTL    =HIDD_VOICE_CTL_REPORT_ID,
     RPT_ID_IN_NOT_USED     =0xff,
     RPT_ID_CLIENT_CHAR_CONF=0xff,
 } rpt_id_in_e;
@@ -107,15 +103,15 @@ typedef enum {
 // Output report id
 typedef enum {
     RPT_ID_OUT_KB_LED      =0x01,
-    RPT_ID_OUT_AUDIO_DATA=WICED_HIDD_VOICE_REPORT_ID,
-    RPT_ID_OUT_AUDIO_CTL =WICED_HIDD_VOICE_CTL_REPORT_ID,
+    RPT_ID_OUT_AUDIO_DATA=HIDD_VOICE_REPORT_ID,
+    RPT_ID_OUT_AUDIO_CTL =HIDD_VOICE_CTL_REPORT_ID,
 } rpt_id_out_e;
 
 // Feature report id
 typedef enum {
     RPT_ID_FEATURE_CNT_CTL =0xcc,
-    RPT_ID_FEATURE_AUDIO_DATA=WICED_HIDD_VOICE_REPORT_ID,
-    RPT_ID_FEATURE_AUDIO_CTL =WICED_HIDD_VOICE_CTL_REPORT_ID,
+    RPT_ID_FEATURE_AUDIO_DATA=HIDD_VOICE_REPORT_ID,
+    RPT_ID_FEATURE_AUDIO_CTL =HIDD_VOICE_CTL_REPORT_ID,
 } rpt_id_feature_e;
 
 /*******************************************************************************

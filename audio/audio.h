@@ -39,7 +39,7 @@
  * device
  *
  */
-#include "android_voice.h"
+#include "hidd_audio_atv.h"
 
 #ifndef __SUPPORT_AUDIO_H__
 #define __SUPPORT_AUDIO_H__
@@ -49,13 +49,17 @@
 //#define SUPPORT_AUDIO_REG_RD_WR             // Most of hosts don't care codec registers. We disable codec read/write to save code space
 
  #define audio_is_active()  hidd_mic_audio_is_active()
- #define DECODE_BUFF_SIZE (WICED_HIDD_MIC_AUDIO_BUFFER_SIZE*2+1)
+ #define DECODE_BUFF_SIZE (HIDD_MIC_AUDIO_BUFFER_SIZE*2+1)
+ #define AUDIO_DATA_SIZE HIDD_MIC_AUDIO_BUFFER_SIZE
  #ifdef ATT_MTU_SIZE_180
-  #define AUDIO_BUFF_LEN DECODE_BUFF_SIZE
-  #define AUDIO_MTU_SIZE (WICED_HIDD_MIC_AUDIO_BUFFER_SIZE*2)
+  #define AUDIO_MTU_SIZE 180
  #else
-  #define AUDIO_BUFF_LEN 20
-  #define AUDIO_MTU_SIZE AUDIO_BUFF_LEN
+  #ifdef ANDROID_AUDIO_1_0
+   #define AUDIO_MTU_SIZE 160
+   #define AUDIO_MTU_BASIC_SIZE 20
+  #else
+   #define AUDIO_MTU_SIZE 20
+  #endif
  #endif
 
  extern uint8_t voice_rpt[];
@@ -103,7 +107,7 @@
   #define audio_START_REQ() audio_start_request()
   #define audio_CODEC_RD()  audio_voiceReadCodecSetting()
   #define audio_CODEC_WR()  audio_voiceWriteCodecSetting()
-  #define audio_MODE_RD()   audio_voiceCtlSend(WICED_HIDD_RC_VOICEMODE_RD_ACK)
+  #define audio_MODE_RD()   audio_voiceCtlSend(HIDD_RC_VOICEMODE_RD_ACK)
   #define audio_flush_data()
  #endif
 #else // !SUPPORT_AUDIO
