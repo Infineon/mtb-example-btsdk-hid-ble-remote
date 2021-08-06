@@ -72,20 +72,20 @@ wiced_bt_cfg_settings_t bt_cfg =
         /* Advertisement scan configuration */
         .high_duty_scan_interval         = WICED_BT_CFG_DEFAULT_HIGH_DUTY_SCAN_INTERVAL,     /**< High duty scan interval */
         .high_duty_scan_window           = WICED_BT_CFG_DEFAULT_HIGH_DUTY_SCAN_WINDOW,       /**< High duty scan window */
-        .high_duty_scan_duration         = 5,                                                /**< High duty scan duration in seconds */
+        .high_duty_scan_duration         = 5,                                                /**< High duty scan duration in seconds (0 for infinite) */
 
         .low_duty_scan_interval          = WICED_BT_CFG_DEFAULT_LOW_DUTY_SCAN_INTERVAL,      /**< Low duty scan interval  */
         .low_duty_scan_window            = WICED_BT_CFG_DEFAULT_LOW_DUTY_SCAN_WINDOW,        /**< Low duty scan window */
-        .low_duty_scan_duration          = 5,                                                /**< Low duty scan duration in seconds */
+        .low_duty_scan_duration          = 5,                                                /**< Low duty scan duration in seconds (0 for infinite) */
 
         /* Connection scan configuration */
         .high_duty_conn_scan_interval    = WICED_BT_CFG_DEFAULT_HIGH_DUTY_CONN_SCAN_INTERVAL,/**< High duty cycle connection scan interval */
         .high_duty_conn_scan_window      = WICED_BT_CFG_DEFAULT_HIGH_DUTY_CONN_SCAN_WINDOW,  /**< High duty cycle connection scan window */
-        .high_duty_conn_duration         = 30,                                               /**< High duty cycle connection duration in seconds */
+        .high_duty_conn_duration         = 30,                                               /**< High duty cycle connection duration in seconds (0 for infinite) */
 
         .low_duty_conn_scan_interval     = WICED_BT_CFG_DEFAULT_LOW_DUTY_CONN_SCAN_INTERVAL, /**< Low duty cycle connection scan interval */
         .low_duty_conn_scan_window       = WICED_BT_CFG_DEFAULT_LOW_DUTY_CONN_SCAN_WINDOW,   /**< Low duty cycle connection scan window */
-        .low_duty_conn_duration          = 30,                                               /**< Low duty cycle connection duration in seconds */
+        .low_duty_conn_duration          = 30,                                               /**< Low duty cycle connection duration in seconds (0 for infinite) */
 
 #if defined(CELT_ENCODER) || defined(ADPCM_ENCODER)
         /* Connection configuration */
@@ -111,31 +111,31 @@ wiced_bt_cfg_settings_t bt_cfg =
         .high_duty_min_interval          = 32,                                               /**< High duty undirected connectable minimum advertising interval */
         .high_duty_max_interval          = 32,                                               /**< High duty undirected connectable maximum advertising interval */
 #ifdef ALLOW_SDS_IN_DISCOVERABLE
-        .high_duty_duration              = 0,                                                /**< High duty undirected connectable advertising duration in seconds */
+        .high_duty_duration              = 0,                                                /**< High duty undirected connectable advertising duration in seconds (0 for infinite) */
 #else
-        .high_duty_duration              = 30,                                               /**< High duty undirected connectable advertising duration in seconds */
+        .high_duty_duration              = 30,                                               /**< High duty undirected connectable advertising duration in seconds (0 for infinite) */
 #endif
         .low_duty_min_interval           = 48,                                               /**< Low duty undirected connectable minimum advertising interval */
         .low_duty_max_interval           = 48,                                               /**< Low duty undirected connectable maximum advertising interval */
-#if defined(ALLOW_SDS_IN_DISCOVERABLE) || defined(ENDLESS_LE_ADVERTISING_WHILE_DISCONNECTED)
-        .low_duty_duration               = 0,                                                /**< Low duty undirected connectable advertising duration in seconds */
+#if defined(ALLOW_SDS_IN_DISCOVERABLE) || defined(ENDLESS_LE_ADVERTISING)
+        .low_duty_duration               = 0,                                                /**< Low duty undirected connectable advertising duration in seconds (0 for infinite) */
 #else
-        .low_duty_duration               = 180,                                              /**< Low duty undirected connectable advertising duration in seconds */
+        .low_duty_duration               = 180,                                              /**< Low duty undirected connectable advertising duration in seconds (0 for infinite) */
 #endif
         .high_duty_directed_min_interval = 32,                                               /**< High duty directed connectable minimum advertising interval */
         .high_duty_directed_max_interval = 32,                                               /**< High duty directed connectable maximum advertising interval */
 
         .low_duty_directed_min_interval  = 2048,                                             /**< Low duty directed connectable minimum advertising interval */
         .low_duty_directed_max_interval  = 2048,                                             /**< Low duty directed connectable maximum advertising interval */
-        .low_duty_directed_duration      = 0,                                                /**< Low duty directed connectable advertising duration in seconds */
+        .low_duty_directed_duration      = 0,                                                /**< Low duty directed connectable advertising duration in seconds (0 for infinite) */
 
         .high_duty_nonconn_min_interval  = WICED_BT_CFG_DEFAULT_HIGH_DUTY_NONCONN_ADV_MIN_INTERVAL, /**< High duty non-connectable minimum advertising interval */
         .high_duty_nonconn_max_interval  = WICED_BT_CFG_DEFAULT_HIGH_DUTY_NONCONN_ADV_MAX_INTERVAL, /**< High duty non-connectable maximum advertising interval */
-        .high_duty_nonconn_duration      = 30,                                                      /**< High duty non-connectable advertising duration in seconds */
+        .high_duty_nonconn_duration      = 30,                                                      /**< High duty non-connectable advertising duration in seconds (0 for infinite) */
 
         .low_duty_nonconn_min_interval   = WICED_BT_CFG_DEFAULT_LOW_DUTY_NONCONN_ADV_MIN_INTERVAL,  /**< Low duty non-connectable minimum advertising interval */
         .low_duty_nonconn_max_interval   = WICED_BT_CFG_DEFAULT_LOW_DUTY_NONCONN_ADV_MAX_INTERVAL,  /**< Low duty non-connectable maximum advertising interval */
-        .low_duty_nonconn_duration       = 0                                                        /**< Low duty non-connectable advertising duration in seconds */
+        .low_duty_nonconn_duration       = 0                                                        /**< Low duty non-connectable advertising duration in seconds (0 for infinite) */
     },
 
     .gatt_cfg = /* GATT configuration */

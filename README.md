@@ -62,9 +62,9 @@ When the key is released, it should send all keys up:<br/>
     - When enabled, the device uses RPA (Random Private Address). When disabled, the device uses Public static address.
 
 - AUTO\_RECONNECT
-    - Use this option to enable auto reconnect. By enabling this option, the device will always stay connected. If it is disconnected, it wil try to reconnect until it is connected. This option should be used together with  DISCONNECTED\_ENDLESS\_ADV. When this option is enabled, the HID device will always try to maintain a connection with the paired HID host; therefore, if the link is down, it will continuously try to reconnect. To conserve power, it should allow entering SDS/ePDS while advertising; thus, the DISCONNECTED\_ENDLESS\_ADV option should be enabled; otherwise, it may drain the battery quickly if the host was not available to reconnect.
+    - Use this option to enable auto reconnect. By enabling this option, the device will always stay connected. If it is disconnected, it wil try to reconnect until it is connected. This option should be used together with  DISCONNECTED\_ENDLESS\_ADV. When this option is enabled, the HID device will always try to maintain a connection with the paired HID host; therefore, if the link is down, it will continuously try to reconnect. To conserve power, it should allow entering SDS/ePDS while advertising; thus, the ENDLESS\_ADV option should be enabled; otherwise, it may drain the battery quickly if the host was not available to reconnect.
 
-- DISCONNECTED\_ENDLESS\_ADV
+- ENDLESS\_ADV
     - Use this option to enable disconnected endless advertisement. When the link is disconnected, if AUTO\_RECONNECT is set, it will automatically start to advertise for reconnect. Otherwise, it will start to advertise after an external event, such as a key press event; i.e. the user will need to press a key to start reconnect. Once it starts to advertise, it will attempt to reconnect forever until it is connected. To conserve power, it allows SDS/ePDS while in low density advertisement with a long interval.
 
 - SKIP\_PARAM\_UPDATE
@@ -128,7 +128,7 @@ For example, to find the key index with row=1 and col=3 with key matrix 5x4, (RO
 To find out row and col for index 16, row = 16 % 5 = 1, col = 16 / 3 = 3
 
 20735/20835:<br/>
-Platform: CYW920735Q60EVB-01,CYW920835M2EVB-01<br/>
+Platform: CYW920735Q60EVB-01,CYW920835M2EVB-01,CYBLE-343072-EVAL-M2B,CYBLE-333074-EVAL-M2B<br/>
 Key Matrix (ROW,COL) = (5,4) = (P00..P04, P08..P11)
 
 AUDIO Key Index     15 = (row=1, col=3) = (P00, P11) = (D2, A3)<br/>
@@ -150,8 +150,8 @@ Application settings below are common for all BTSDK applications and can be conf
 > For HW debugging, configure ENABLE\_DEBUG=1. See the document [WICED-Hardware-Debugging](https://github.com/cypresssemiconductorco/btsdk-docs/blob/master/docs/BT-SDK/WICED-Hardware-Debugging.pdf) for more information. This setting configures GPIO for SWD.<br>
 >
    - CYW920819EVB-02/CYW920820EVB-02: SWD signals are shared with D4 and D5, see SW9 in schematics.
-   - CYBT-213043-MESH/CYBT-213043-EVAL/CYBT-243053-EVAL/CYBT-253059-EVAL/CYBT-253059-EVAL: SWD signals are routed to P12=SWDCK and P13=SWDIO. Use expansion connectors to connect VDD, GND, SWDCK, and SWDIO to your SWD Debugger probe.
-   - CYBT-223058-EVAL/CYBT-243053-EVAL/CYW920835M2EVB-01: SWD signals are routed to P02=SWDCK and P03=SWDIO. Use expansion connectors to connect VDD, GND, SWDCK, and SWDIO to your SWD Debugger probe.
+   - CYBT-213043-MESH/CYBT-213043-EVAL/CYBT-253059-EVAL: SWD signals are routed to P12=SWDCK and P13=SWDIO. Use expansion connectors to connect VDD, GND, SWDCK, and SWDIO to your SWD Debugger probe.
+   - CYBT-223058-EVAL/CYW920835M2EVB-01/CYBT-243053-EVAL/CYBLE-343072-EVAL-M2B/CYBLE-333074-EVAL-M2B: SWD signals are routed to P02=SWDCK and P03=SWDIO. Use expansion connectors to connect VDD, GND, SWDCK, and SWDIO to your SWD Debugger probe.
    - CYBT-263065-EVAL/CYBT-273063-EVAL: SWD signals are routed to P02=SWDCK and P04=SWDIO. Use expansion connectors to connect VDD, GND, SWDCK, and SWDIO to your SWD Debugger probe.
    - CYBT-343026-EVAL/CYBT-353027-EVAL: SWD signals are routed to P11=SWDCK and P15=SWDIO. Use expansion connectors to connect VDD, GND, SWDCK, and SWDIO to your SWD Debugger probe.
    - CYBT-343052-EVAL: SWD signals are routed to P02=SWDCK and P03=SWDIO. Use expansion connectors to connect VDD, GND, SWDCK, and SWDIO to your SWD Debugger probe.
@@ -163,6 +163,7 @@ Application settings below are common for all BTSDK applications and can be conf
    - CYW920706WCDEVAL: SWD debugging requires fly-wire connections. The default setup P15 (J22 pin 3 or J24 pin 1) for SWDIO and P11 (J23 pin 5
     or J22 pin 4) for SWDCK.
    - CYW920735Q60EVB-01: SWD hardware debugging supported. The default setup uses the J13 debug header, P3 (J13 pin 2) for SWDIO and P2 (J13 pin 4) for SWDCK.  They can be optionally routed to D4 and D4 on the Arduino header J4, see SW9 in schematics.
+   - CYW920736M2EVB-01: SWD hardware debugging requires fly-wire connections. The only option is using P14 for SWDCK and P15 for SWDIO. These route to Arduino header J2, A1 and A0. These can be fly-wired to Arduino header J4, D4 and D5. From there the signals connect to the KitProg3 SWD bridge. In addition, the debug macros (SETUP_APP_FOR_DEBUG_IF_DEBUG_ENABLED and BUSY_WAIT_TILL_MANUAL_CONTINUE_IF_DEBUG_ENABLED) are placed in sparinit.c in code common to all applications for this device. Most applications for this device call bleprofile_GPIOInit() in subsequent code, overwriting the SWD pin configuration. To use hardware debugging after the call to bleprofile_GPIOInit(), place the debug macros in code after that call.
    - SWD hardware debugging is not supported on the following:
    >- CYW920721M2EVK-01
    >- CYW920835REF-RCU-01
@@ -262,8 +263,12 @@ Note: this is a list of all features and profiles supported in BTSDK, but some A
     - [CYW920706WCDEVAL](https://github.com/cypresssemiconductorco/TARGET_CYW920706WCDEVAL), [CYBT-353027-EVAL](https://github.com/cypresssemiconductorco/TARGET_CYBT-353027-EVAL), [CYBT-343026-EVAL](https://github.com/cypresssemiconductorco/TARGET_CYBT-343026-EVAL)
 - [CYW20735B1 chip](https://github.com/cypresssemiconductorco/20735B1)
     - [CYW920735Q60EVB-01](https://github.com/cypresssemiconductorco/TARGET_CYW920735Q60EVB-01), [CYBT-343052-EVAL](https://github.com/cypresssemiconductorco/TARGET_CYBT-343052-EVAL)
+- [CYW20736A1 chip](https://github.com/cypresssemiconductorco/20736A1)
+    - [CYW920736M2EVB-01](https://github.com/cypresssemiconductorco/TARGET_CYW920736M2EVB-01)
+- [CYW20739B2 chip](https://github.com/cypresssemiconductorco/20739B2)
+    - [CYW920739M2EVB-01](https://github.com/cypresssemiconductorco/TARGET_CYW920739M2EVB-01)
 - [CYW20835B1 chip](https://github.com/cypresssemiconductorco/20835B1)
-    - [CYW920835REF-RCU-01](https://github.com/cypresssemiconductorco/TARGET_CYW920835REF-RCU-01), [CYW920835M2EVB-01](https://github.com/cypresssemiconductorco/TARGET_CYW920835M2EVB-01)
+    - [CYW920835REF-RCU-01](https://github.com/cypresssemiconductorco/TARGET_CYW920835REF-RCU-01), [CYW920835M2EVB-01](https://github.com/cypresssemiconductorco/TARGET_CYW920835M2EVB-01), [CYBLE-343072-EVAL-M2B](https://github.com/cypresssemiconductorco/TARGET_CYBLE-343072-EVAL-M2B), [CYBLE-333074-EVAL-M2B](https://github.com/cypresssemiconductorco/TARGET_CYBLE-333074-EVAL-M2B)
 - [CYW43012C0 chip](https://github.com/cypresssemiconductorco/43012C0)
     - [CYW9M2BASE-43012BT](https://github.com/cypresssemiconductorco/TARGET_CYW9M2BASE-43012BT), [CYW943012BTEVK-01](https://github.com/cypresssemiconductorco/TARGET_CYW943012BTEVK-01)
 

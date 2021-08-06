@@ -39,6 +39,8 @@
 #include "app.h"
 #ifdef SUPPORT_TOUCHPAD
 
+#include "wiced_hal_mia.h"
+
 #define MAX_TP_EVENT_DELAY_IN_MS    100
 TouchPadIf_t  * touchpad   = NULL;
 uint8_t  app_touchpad_rpt[TOUCHPAD_RPT_PAYLOAD_SIZE] = {0, };

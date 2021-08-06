@@ -805,6 +805,10 @@ void app_transportStateChangeNotification(uint32_t newState)
 #endif
         // Tell the transport to stop polling
         hidd_link_enable_poll_callback(BT_TRANSPORT_LE, WICED_FALSE);
+
+        //allow Shut Down Sleep (SDS) only if we are not attempting reconnect
+        if (!hidd_link_is_reconnect_timer_running())
+            hidd_deep_sleep_not_allowed(2000); // 2 seconds. timeout in ms
         break;
 
     case HIDLINK_LE_DISCOVERABLE:
@@ -900,12 +904,10 @@ wiced_result_t app_start(void)
     ir_init(IR_TX_GPIO);
     audio_init(APP_pollReportUserActivity);
     touchpad_init(gpioActivityDetected);
-    hidd_link_init();
     findme_init();
     key_init(NUM_KEYSCAN_ROWS, NUM_KEYSCAN_COLS, APP_pollReportUserActivity, APP_keyDetected);
 
-    wiced_hal_mia_enable_mia_interrupt(TRUE);
-    wiced_hal_mia_enable_lhl_interrupt(TRUE);//GPIO interrupt
+    hidd_link_init(); // linitialize link last
 
     WICED_BT_TRACE("\nFree RAM bytes=%d bytes", wiced_memory_get_free_bytes());
 

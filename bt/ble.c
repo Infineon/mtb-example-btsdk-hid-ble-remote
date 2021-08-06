@@ -1394,12 +1394,6 @@ static void BLE_transportStateChangeNotification(uint32_t newState)
         //start 15 second timer to make sure connection param update is requested before SDS
         wiced_start_timer(&ble.conn_param_update_timer,15000); //15 seconds. timeout in ms
         break;
-
-    case HIDLINK_LE_DISCONNECTED:
-        //allow Shut Down Sleep (SDS) only if we are not attempting reconnect
-        if (!hidd_link_is_reconnect_timer_running())
-            hidd_deep_sleep_not_allowed(2000); // 2 seconds. timeout in ms
-        break;
     }
 
     // tell applicaton state is changed
