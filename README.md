@@ -1,10 +1,10 @@
-# BLE Remote Control Sample Application
+# LE Remote Control Sample Application
 
 ## Overview
 
-The BLE Remote Control application is a single chip SoC compliant with HID over GATT Profile (HOGP). Supported features include key, microphone (voice over HOGP), Infrared Transmit (IR TX), and TouchPad.
+The LE Remote Control application is a single chip SoC compliant with HID over GATT Profile (HOGP). Supported features include key, microphone (voice over HOGP), Infrared Transmit (IR TX), and TouchPad.
 
-During initialization the app registers with the LE stack, the WICED HID Device Library, and keyscan and external HW peripherals to receive various notifications including bonding complete, connection status change, peer GATT requests/commands, interrupts for key pressed/released, ADC audio, and Touchpad. Pressing any key will start LE advertising. When the device is successfully bonded, the app saves the bonded host's information in NVRAM. When the user presses/releases any key, a key report will be sent to the host. On connection up or battery level changed, a battery report will be sent to the host. When battery level is below shutdown voltage, device will critical shutdown. When the user presses and holds the microphone key, voice streaming starts until the user releases the microphone key. When the user presses and holds the power key, IR TX starts until the power key is released.
+During initialization the app registers with the LE stack, the AIROC&#8482; HID Device Library, and keyscan and external HW peripherals to receive various notifications including bonding complete, connection status change, peer GATT requests/commands, interrupts for key pressed/released, ADC audio, and Touchpad. Pressing any key will start LE advertising. When the device is successfully bonded, the app saves the bonded host's information in NVRAM. When the user presses/releases any key, a key report will be sent to the host. On connection up or battery level changed, a battery report will be sent to the host. When battery level is below shutdown voltage, device will critical shutdown. When the user presses and holds the microphone key, voice streaming starts until the user releases the microphone key. When the user presses and holds the power key, IR TX starts until the power key is released.
 
 ## Features demonstrated
 - GATT database and device configuration initialization
@@ -17,20 +17,20 @@ During initialization the app registers with the LE stack, the WICED HID Device 
 # Instructions
 To demonstrate the app, walk through the following steps:
 
-1. Plug the WICED board or Remote Control HW into your computer.
+1. Plug the AIROC&#8482; board or Remote Control HW into your computer.
 2. Build and download the application.
 3. If the download failed due to not able to detecting device, make sure the HCI COM port is not opened by other application (such as ClientControl) and repeat step 2.
    If it still fails, try the following recovery procedure:
-     a. Place a jumper to bypass Serial Flash in remote control (or press and hold the Recovery button in WICED board), then power up the hardware (or press reset button in WICED board).
-     b. Remove the jumper (or release the Recovery button in WICED board) so that download procedure below can write to Serial Flash. Go back to step 2.
+     a. Place a jumper to bypass Serial Flash in remote control (or press and hold the Recovery button in AIROC&#8482; board), then power up the hardware (or press reset button in AIROC&#8482; board).
+     b. Remove the jumper (or release the Recovery button in AIROC&#8482; board) so that download procedure below can write to Serial Flash. Go back to step 2.
 4. Unplug the EVAL board or Remote Control HW from your computer (i.e. unplug the UART cable).
 5. Power cycle the EVAL board or Remote Control HW.
 6. Press any key to start LE advertising, then pair with a Host.
 7. Once connected, it becomes the remote control of the Host.
 
-In case what you have is the WICED EVAL board, you can either use fly wire to connect to GPIOs to simulate key press and release. Or use the ClientControl tool in the tools to simulate key press and release.
+In case what you have is the AIROC&#8482; EVAL board, you can either use fly wire to connect to GPIOs to simulate key press and release. Or use the ClientControl tool in the tools to simulate key press and release.
 
-To use ClientControl tool + WICED EVAL board to simulate key press and release, launch ClientControl from MTB Tools section of the QuickPanel. Make sure you use "TESTING\_USING\_HCI=1" in the application makefile. The following steps shows how to establish communication between ClientControl and the device.
+To use ClientControl tool + AIROC&#8482; EVAL board to simulate key press and release, launch ClientControl from MTB Tools section of the QuickPanel. Make sure you use "TESTING\_USING\_HCI=1" in the application makefile. The following steps shows how to establish communication between ClientControl and the device.
 
 For 20735/20835 devices:
 
@@ -136,34 +136,41 @@ IR Key Index        17 = (row=2, col=3) = (P02, P11) = (D4, A3)<br/>
 Pairing Key Index   18 = (row=3, col=3) = (P03, P11) = (D5, A3)<br/>
 
 When testing with keys using ClientControl with key buttons, the device should be paired with a separated PC that is not running ClientControl. The reason is because when clicking a key, '1', for example, the key '1' will be send to host immediately. At that moment, since ClientControl is the active window, the key will be sent to ClientControl application and get ingored. Thus, it cannot be be sent to the other application, Notepad, for example, that expecting the key.
+## BTSTACK version
+
+BTSDK AIROC&#8482; chips contain the embedded AIROC&#8482; Bluetooth&#174; stack, BTSTACK. Different chips use different versions of BTSTACK, so some assets may contain variant sets of files targeting the different versions in COMPONENT\_btstack\_vX (where X is the stack version). Applications automatically include the appropriate folder using the COMPONENTS make variable mechanism, and all BSPs declare which stack version should be used in the BSP .mk file, with a declaration such as:<br>
+> COMPONENTS+=btstack\_v1<br>
+or:<br>
+> COMPONENTS+=btstack\_v3
+
 ## Common application settings
 
 Application settings below are common for all BTSDK applications and can be configured via the makefile of the application or passed in via the command line.
 
-**BT\_DEVICE\_ADDRESS**
-> Set the BDA (Bluetooth Device Address) for your device. The address is 6 bytes, for example, 20819A10FFEE. By default, the SDK will set a BDA for your device by combining the 7 hex digit device ID with the last 5 hex digits of the host PC MAC address.
+##### BT\_DEVICE\_ADDRESS
+> Set the BDA (Bluetooth&#174; Device Address) for your device. The address is 6 bytes, for example, 20819A10FFEE. By default, the SDK will set a BDA for your device by combining the 7 hex digit device ID with the last 5 hex digits of the host PC MAC address.
 
-**UART**
+##### UART
 > Set to the UART port you want to use to download the application. For example 'COM6' on Windows or '/dev/ttyWICED\_HCI\_UART0' on Linux or '/dev/tty.usbserial-000154' on macOS. By default, the SDK will auto-detect the port.
 
-**ENABLE_DEBUG**
-> For HW debugging, configure ENABLE\_DEBUG=1. See the document [WICED-Hardware-Debugging](https://github.com/cypresssemiconductorco/btsdk-docs/blob/master/docs/BT-SDK/WICED-Hardware-Debugging.pdf) for more information. This setting configures GPIO for SWD.<br>
+##### ENABLE_DEBUG
+> For HW debugging, configure ENABLE\_DEBUG=1. See the document [AIROC&#8482;-Hardware-Debugging](https://github.com/cypresssemiconductorco/btsdk-docs/blob/master/docs/BT-SDK/WICED-Hardware-Debugging.pdf) for more information. This setting configures GPIO for SWD.<br>
 >
    - CYW920819EVB-02/CYW920820EVB-02: SWD signals are shared with D4 and D5, see SW9 in schematics.
    - CYBT-213043-MESH/CYBT-213043-EVAL/CYBT-253059-EVAL: SWD signals are routed to P12=SWDCK and P13=SWDIO. Use expansion connectors to connect VDD, GND, SWDCK, and SWDIO to your SWD Debugger probe.
-   - CYBT-223058-EVAL/CYW920835M2EVB-01/CYBT-243053-EVAL/CYBLE-343072-EVAL-M2B/CYBLE-333074-EVAL-M2B: SWD signals are routed to P02=SWDCK and P03=SWDIO. Use expansion connectors to connect VDD, GND, SWDCK, and SWDIO to your SWD Debugger probe.
+   - CYBT-223058-EVAL/CYW920835M2EVB-01/CYBT-243053-EVAL/CYBLE-343072-EVAL-M2B/CYBLE-333074-EVAL-M2B/CYBLE-343072-MESH: SWD signals are routed to P02=SWDCK and P03=SWDIO. Use expansion connectors to connect VDD, GND, SWDCK, and SWDIO to your SWD Debugger probe.
    - CYBT-263065-EVAL/CYBT-273063-EVAL: SWD signals are routed to P02=SWDCK and P04=SWDIO. Use expansion connectors to connect VDD, GND, SWDCK, and SWDIO to your SWD Debugger probe.
-   - CYBT-343026-EVAL/CYBT-353027-EVAL: SWD signals are routed to P11=SWDCK and P15=SWDIO. Use expansion connectors to connect VDD, GND, SWDCK, and SWDIO to your SWD Debugger probe.
+   - CYBT-343026-EVAL/CYBT-353027-EVAL/CYBT-333047-EVAL: SWD signals are routed to P11=SWDCK and P15=SWDIO. Use expansion connectors to connect VDD, GND, SWDCK, and SWDIO to your SWD Debugger probe.
    - CYBT-343052-EVAL: SWD signals are routed to P02=SWDCK and P03=SWDIO. Use expansion connectors to connect VDD, GND, SWDCK, and SWDIO to your SWD Debugger probe.
    - CYBT-413055-EVAL/CYBT-413061-EVAL: SWD signals are routed to P16=SWDCK and P17=SWDIO. Use expansion connectors to connect VDD, GND, SWDCK, and SWDIO to your SWD Debugger probe.
    - CYW989820EVB-01: SWDCK (P02) is routed to the J13 DEBUG connector, but not SWDIO. Add a wire from J10 pin 3 (PUART CTS) to J13 pin 2 to connect GPIO P10 to SWDIO.
    - CYW920719B2Q40EVB-01: PUART RX/TX signals are shared with SWDCK and SWDIO. Remove RX and TX jumpers on J10 when using SWD. PUART and SWD cannot be used simultaneously on this board unless these pins are changed from the default configuration.
    - CYW920721B2EVK-02: SWD signals are shared with D4 and D5, see SW9 in schematics.
-   - CYW920721M2EVK-02: The default setup uses P03 for SWDIO and P05 for SWDCK. Check the position of SW15 if using JLink with the DEBUG connector.
+   - CYW920721M2EVK-02/CYW920721M2EVB-03: The default setup uses P03 for SWDIO and P05 for SWDCK. Check the position of SW15 if using JLink with the DEBUG connector.
    - CYW920706WCDEVAL: SWD debugging requires fly-wire connections. The default setup P15 (J22 pin 3 or J24 pin 1) for SWDIO and P11 (J23 pin 5
     or J22 pin 4) for SWDCK.
    - CYW920735Q60EVB-01: SWD hardware debugging supported. The default setup uses the J13 debug header, P3 (J13 pin 2) for SWDIO and P2 (J13 pin 4) for SWDCK.  They can be optionally routed to D4 and D4 on the Arduino header J4, see SW9 in schematics.
-   - CYW920736M2EVB-01: SWD hardware debugging requires fly-wire connections. The only option is using P14 for SWDCK and P15 for SWDIO. These route to Arduino header J2, A1 and A0. These can be fly-wired to Arduino header J4, D4 and D5. From there the signals connect to the KitProg3 SWD bridge. In addition, the debug macros (SETUP_APP_FOR_DEBUG_IF_DEBUG_ENABLED and BUSY_WAIT_TILL_MANUAL_CONTINUE_IF_DEBUG_ENABLED) are placed in sparinit.c in code common to all applications for this device. Most applications for this device call bleprofile_GPIOInit() in subsequent code, overwriting the SWD pin configuration. To use hardware debugging after the call to bleprofile_GPIOInit(), place the debug macros in code after that call.
+   - CYW920736M2EVB-01: SWD hardware debugging requires fly-wire connections. The only option is using P14 for SWDCK and P15 for SWDIO. These route to Arduino header J2, A1 and A0. These can be fly-wired to Arduino header J4, D4 and D5. From there the signals connect to the KitProg3 SWD bridge. In addition, the debug macros (SETUP\_APP\_FOR\_DEBUG\_IF\_DEBUG\_ENABLED and BUSY\_WAIT\_TILL\_MANUAL\_CONTINUE\_IF\_DEBUG\_ENABLED) are placed in sparinit.c in code common to all applications for this device. Most applications for this device call bleprofile\_GPIOInit() in subsequent code, overwriting the SWD pin configuration. To use hardware debugging after the call to bleprofile\_GPIOInit(), place the debug macros in code after that call.
    - SWD hardware debugging is not supported on the following:
    >- CYW920721M2EVK-01
    >- CYW920835REF-RCU-01
@@ -174,14 +181,15 @@ Application settings below are common for all BTSDK applications and can be conf
    >- CYBT-423060-EVAL
    >- CYBT-483056-EVAL
    >- CYBT-483062-EVAL
+   >- CYW955572BTEVK-01
 
 ## Building code examples
 
-**Using the ModusToolbox IDE**
+**Using the ModusToolbox&#8482; Eclipse IDE**
 
-1. Install ModusToolbox 2.2 (or higher).
-2. In the ModusToolbox IDE, click the **New Application** link in the Quick Panel (or, use **File > New > ModusToolbox IDE Application**).
-3. Pick your board for BTSDK under AIROC Bluetooth BSPs.
+1. Install ModusToolbox&#8482; 2.2 (or higher).
+2. In the ModusToolbox&#8482; Eclipse IDE, click the **New Application** link in the Quick Panel (or, use **File > New > ModusToolbox IDE Application**).
+3. Pick your board for BTSDK under AIROC&#8482; Bluetooth&#174; BSPs.
 4. Select the application in the IDE.
 5. In the Quick Panel, select **Build** to build the application.
 6. To program the board (download the application), select **Program** in the Launches section of the Quick Panel.
@@ -189,7 +197,7 @@ Application settings below are common for all BTSDK applications and can be conf
 
 **Using command line**
 
-1. Install ModusToolbox 2.2 (or higher).
+1. Install ModusToolbox&#8482; 2.2 (or higher).
 2. On Windows, use Cygwin from \ModusToolbox\tools_2.x\modus-shell\Cygwin.bat to build apps.
 3. Use the tool 'project-creator-cli' under \ModusToolbox\tools_2.x\project-creator\ to create your application.<br/>
    > project-creator-cli --board-id (BSP) --app-id (appid) -d (dir) <br/>
@@ -223,21 +231,21 @@ Applications that support OTA upgrade can be updated via the peer OTA app in:<br
 See the readme.txt file located in the above folder for instructions.<br>
 To generate the OTA image for the app, configure OTA\_FW\_UPGRADE=1 in the app
 makefile, or append OTA\_FW\_UPGRADE=1 to a build command line, for example:
-> make PLATFORM=CYW955572BTEVK-01 OTA\_FW\_UPGRADE=1 build<br>
+> make PLATFORM=CYW920706WCDEVAL OTA\_FW\_UPGRADE=1 build<br>
 
 This will the generate \<app>.bin file in the 'build' folder.
 
 ## SDK software features
 
-- Dual-mode Bluetooth stack included in the ROM (BR/EDR and LE)
-- Bluetooth stack and profile level APIs for embedded Bluetooth application development
-- WICED HCI protocol to simplify host/MCU application development
+- Dual-mode Bluetooth&#174; stack included in the ROM (BR/EDR and LE)
+- Bluetooth&#174; stack and profile level APIs for embedded Bluetooth&#174; application development
+- AIROC&#8482; HCI protocol to simplify host/MCU application development
 - APIs and drivers to access on-board peripherals
-- Bluetooth protocols include GAP, GATT, SMP, RFCOMM, SDP, AVDT/AVCT, LE Mesh
+- Bluetooth&#174; protocols include GAP, GATT, SMP, RFCOMM, SDP, AVDT/AVCT, LE Mesh
 - LE and BR/EDR profile APIs, libraries, and sample apps
 - Support for Over-The-Air (OTA) upgrade
 - Device Configurator for creating custom pin mapping
-- Bluetooth Configurator for creating LE GATT Database
+- Bluetooth&#174; Configurator for creating LE GATT Database
 - Peer apps based on Android, iOS, Windows, etc. for testing and reference
 - Utilities for protocol tracing, manufacturing testing, etc.
 - Documentation for APIs, datasheets, profiles, and features
@@ -247,7 +255,7 @@ This will the generate \<app>.bin file in the 'build' folder.
 - Google support: Google Fast Pair Service (GFPS), Eddystone
 - Amazon support: Alexa Mobile Accessories (AMA)
 
-Note: this is a list of all features and profiles supported in BTSDK, but some AIROC devices may only support a subset of this list.
+Note: this is a list of all features and profiles supported in BTSDK, but some AIROC&#8482; devices may only support a subset of this list.
 
 ## List of boards available for use with BTSDK
 
@@ -256,21 +264,23 @@ Note: this is a list of all features and profiles supported in BTSDK, but some A
 - [CYW20820A1 chip](https://github.com/cypresssemiconductorco/20820A1)
     - [CYW920820EVB-02](https://github.com/cypresssemiconductorco/TARGET_CYW920820EVB-02), [CYW989820EVB-01](https://github.com/cypresssemiconductorco/TARGET_CYW989820EVB-01), [CYBT-243053-EVAL](https://github.com/cypresssemiconductorco/TARGET_CYBT-243053-EVAL), [CYBT-253059-EVAL](https://github.com/cypresssemiconductorco/TARGET_CYBT-253059-EVAL)
 - [CYW20721B2 chip](https://github.com/cypresssemiconductorco/20721B2)
-    - [CYW920721B2EVK-02](https://github.com/cypresssemiconductorco/TARGET_CYW920721B2EVK-02), [CYW920721M2EVK-01](https://github.com/cypresssemiconductorco/TARGET_CYW920721M2EVK-01), [CYW920721M2EVK-02](https://github.com/cypresssemiconductorco/TARGET_CYW920721M2EVK-02), [CYBT-423060-EVAL](https://github.com/cypresssemiconductorco/TARGET_CYBT-423060-EVAL), [CYBT-483062-EVAL](https://github.com/cypresssemiconductorco/TARGET_CYBT-483062-EVAL), [CYBT-413061-EVAL](https://github.com/cypresssemiconductorco/TARGET_CYBT-413061-EVAL)
+    - [CYW920721B2EVK-02](https://github.com/cypresssemiconductorco/TARGET_CYW920721B2EVK-02), [CYW920721M2EVK-01](https://github.com/cypresssemiconductorco/TARGET_CYW920721M2EVK-01), [CYW920721M2EVK-02](https://github.com/cypresssemiconductorco/TARGET_CYW920721M2EVK-02), [CYW920721M2EVB-03](https://github.com/Infineon/TARGET_CYW920721M2EVB-03), [CYBT-423060-EVAL](https://github.com/cypresssemiconductorco/TARGET_CYBT-423060-EVAL), [CYBT-483062-EVAL](https://github.com/cypresssemiconductorco/TARGET_CYBT-483062-EVAL), [CYBT-413061-EVAL](https://github.com/cypresssemiconductorco/TARGET_CYBT-413061-EVAL)
 - [CYW20719B2 chip](https://github.com/cypresssemiconductorco/20719B2)
     - [CYW920719B2Q40EVB-01](https://github.com/cypresssemiconductorco/TARGET_CYW920719B2Q40EVB-01), [CYBT-423054-EVAL](https://github.com/cypresssemiconductorco/TARGET_CYBT-423054-EVAL), [CYBT-413055-EVAL](https://github.com/cypresssemiconductorco/TARGET_CYBT-413055-EVAL), [CYBT-483056-EVAL](https://github.com/cypresssemiconductorco/TARGET_CYBT-483056-EVAL)
 - [CYW20706A2 chip](https://github.com/cypresssemiconductorco/20706A2)
-    - [CYW920706WCDEVAL](https://github.com/cypresssemiconductorco/TARGET_CYW920706WCDEVAL), [CYBT-353027-EVAL](https://github.com/cypresssemiconductorco/TARGET_CYBT-353027-EVAL), [CYBT-343026-EVAL](https://github.com/cypresssemiconductorco/TARGET_CYBT-343026-EVAL)
+    - [CYW920706WCDEVAL](https://github.com/cypresssemiconductorco/TARGET_CYW920706WCDEVAL), [CYBT-353027-EVAL](https://github.com/cypresssemiconductorco/TARGET_CYBT-353027-EVAL), [CYBT-343026-EVAL](https://github.com/cypresssemiconductorco/TARGET_CYBT-343026-EVAL), [CYBT-333047-EVAL](https://github.com/Infineon/TARGET_CYBT-333047-EVAL)
 - [CYW20735B1 chip](https://github.com/cypresssemiconductorco/20735B1)
     - [CYW920735Q60EVB-01](https://github.com/cypresssemiconductorco/TARGET_CYW920735Q60EVB-01), [CYBT-343052-EVAL](https://github.com/cypresssemiconductorco/TARGET_CYBT-343052-EVAL)
-- [CYW20736A1 chip](https://github.com/cypresssemiconductorco/20736A1)
-    - [CYW920736M2EVB-01](https://github.com/cypresssemiconductorco/TARGET_CYW920736M2EVB-01)
-- [CYW20739B2 chip](https://github.com/cypresssemiconductorco/20739B2)
-    - [CYW920739M2EVB-01](https://github.com/cypresssemiconductorco/TARGET_CYW920739M2EVB-01)
 - [CYW20835B1 chip](https://github.com/cypresssemiconductorco/20835B1)
-    - [CYW920835REF-RCU-01](https://github.com/cypresssemiconductorco/TARGET_CYW920835REF-RCU-01), [CYW920835M2EVB-01](https://github.com/cypresssemiconductorco/TARGET_CYW920835M2EVB-01), [CYBLE-343072-EVAL-M2B](https://github.com/cypresssemiconductorco/TARGET_CYBLE-343072-EVAL-M2B), [CYBLE-333074-EVAL-M2B](https://github.com/cypresssemiconductorco/TARGET_CYBLE-333074-EVAL-M2B)
+    - [CYW920835REF-RCU-01](https://github.com/cypresssemiconductorco/TARGET_CYW920835REF-RCU-01), [CYW920835M2EVB-01](https://github.com/cypresssemiconductorco/TARGET_CYW920835M2EVB-01), [CYBLE-343072-EVAL-M2B](https://github.com/Infineon/TARGET_CYBLE-343072-EVAL-M2B), [CYBLE-333074-EVAL-M2B](https://github.com/Infineon/TARGET_CYBLE-333074-EVAL-M2B), [CYBLE-343072-MESH](https://github.com/Infineon/TARGET_CYBLE-343072-MESH)
 - [CYW43012C0 chip](https://github.com/cypresssemiconductorco/43012C0)
     - [CYW9M2BASE-43012BT](https://github.com/cypresssemiconductorco/TARGET_CYW9M2BASE-43012BT), [CYW943012BTEVK-01](https://github.com/cypresssemiconductorco/TARGET_CYW943012BTEVK-01)
+- [CYW20736A1 chip](https://github.com/Infineon/20736A1)
+    - [CYW920736M2EVB-01](https://github.com/Infineon/TARGET_CYW920736M2EVB-01)
+- [CYW30739A0 chip](https://github.com/Infineon/30739A0)
+    - [CYW930739M2EVB-01](https://github.com/Infineon/TARGET_CYW930739M2EVB-01)
+- [CYW55572A1 chip](https://github.com/Infineon/55572A1)
+    - [CYW955572BTEVK-01](https://github.com/Infineon/TARGET_CYW955572BTEVK-01)
 
 
 ## Folder structure
@@ -279,7 +289,7 @@ All BTSDK code examples need the 'mtb\_shared\wiced\_btsdk' folder to build and 
 
 **dev-kit**
 
-This folder contains the files that are needed to build the embedded Bluetooth apps.
+This folder contains the files that are needed to build the embedded Bluetooth&#174; apps.
 
 * baselib: Files for chips supported by BTSDK. For example CYW20819, CYW20719, CYW20706, etc.
 
@@ -293,11 +303,11 @@ This folder contains the files that are needed to build the embedded Bluetooth a
 
 **tools**
 
-This folder contains tools and utilities need to test the embedded Bluetooth apps.
+This folder contains tools and utilities need to test the embedded Bluetooth&#174; apps.
 
-* btsdk-host-apps-bt-ble: Host apps (Client Control) for LE and BR/EDR embedded apps, demonstrates the use of WICED HCI protocol to control embedded apps.
+* btsdk-host-apps-bt-ble: Host apps (Client Control) for LE and BR/EDR embedded apps, demonstrates the use of AIROC&#8482; HCI protocol to control embedded apps.
 
-* btsdk-host-peer-apps-mesh: Host apps (Client Control) and Peer apps for embedded Mesh apps, demonstrates the use of WICED HCI protocol to control embedded apps, and configuration and provisioning from peer devices.
+* btsdk-host-peer-apps-mesh: Host apps (Client Control) and Peer apps for embedded Mesh apps, demonstrates the use of AIROC&#8482; HCI protocol to control embedded apps, and configuration and provisioning from peer devices.
 
 * btsdk-peer-apps-ble: Peer apps for embedded LE apps.
 
@@ -308,27 +318,27 @@ This folder contains tools and utilities need to test the embedded Bluetooth app
 See README.md in the sub-folders for more information.
 
 ## Software Tools
-The following tool applications are installed on your computer either with ModusToolbox, or by creating an application in the workspace that can use the tool.
+The following tool applications are installed on your computer either with ModusToolbox&#8482;, or by creating an application in the workspace that can use the tool.
 
-**BT Spy:**<br>
->   BTSpy is a trace viewer utility that can be used with WICED BT platforms to
+**BTSpy:**<br>
+>   BTSpy is a trace viewer utility that can be used with AIROC&#8482; Bluetooth&#174; platforms to
     view protocol and application trace messages from the embedded device. The
     utility is located in the folder below. For more information, see readme.txt in the same folder.<br>
     This utility can be run directly from the filesystem, or it can be run from
-    the Tools section of the ModusToolbox IDE QuickPanel, or by right-clicking
-    a project in the IDE Project Explorer pane and selecting the ModusToolbox
+    the Tools section of the ModusToolbox&#8482; QuickPanel, or by right-clicking
+    a project in the Project Explorer pane and selecting the ModusToolbox&#8482;
     context menu.<br>
     It is supported on Windows, Linux and macOS.<br>
     Location:  \<Workspace Dir>\wiced_btsdk\tools\btsdk-utils\BTSpy
 
-**BT/LE Profile Client Control:**<br>
+**Bluetooth&#174; Classic and LE Profile Client Control:**<br>
 >   This application emulates host MCU applications for LE and BR/EDR profiles.
-    It demonstrates WICED BT APIs. The application communicates with embedded
-    apps over the WICED HCI interface. The application is located in the folder
+    It demonstrates AIROC&#8482; Bluetooth&#174; APIs. The application communicates with embedded
+    apps over the "WICED HCI UART" interface. The application is located in the folder
     below. For more information, see readme.txt in the same folder.<br>
     This utility can be run directly from the filesystem, or it can be run from
-    the Tools section of the ModusToolbox IDE QuickPanel, or by right-clicking
-    a project in the IDE Project Explorer pane and selecting the ModusToolbox
+    the Tools section of the ModusToolbox&#8482; QuickPanel, or by right-clicking
+    a project in the Project Explorer pane and selecting the ModusToolbox&#8482;
     context menu.<br>
     It is supported on Windows, Linux, and macOS.<br>
     Location:  \<Workspace Dir>\wiced\_btsdk\tools\btsdk-host-apps-bt-ble\client_control
@@ -339,10 +349,10 @@ The following tool applications are installed on your computer either with Modus
     mesh networks. The application is located in the folder below. For more
     information, see readme.txt in the same folder.<br>
     This utility can be run directly from the filesystem, or it can be run from
-    the Tools section of the ModusToolbox IDE QuickPanel (if a mesh-capable
-    project is selected in the IDE Project Explorer pane), or by right-clicking
-    a mesh-capable project in the IDE Project Explorer pane and selecting the
-    ModusToolbox context menu.<br>
+    the Tools section of the ModusToolbox&#8482; QuickPanel (if a mesh-capable
+    project is selected in the Project Explorer pane), or by right-clicking
+    a mesh-capable project in the Project Explorer pane and selecting the
+    ModusToolbox&#8482; context menu.<br>
     The full version is provided for Windows (VS\_ClientControl) supporting all
     Mesh models.<br>
     A limited version supporting only the Lighting model (QT\_ClientControl) is
@@ -350,7 +360,7 @@ The following tool applications are installed on your computer either with Modus
     Location:  \<Workspace Dir>\wiced_btsdk\tools\btsdk-host-peer-apps-mesh\host
 
 **Peer apps:**<br>
->   Applications that run on Windows, iOS or Android and act as peer BT apps to
+>   Applications that run on Windows, iOS or Android and act as peer Bluetooth&#174; apps to
     demonstrate specific profiles or features, communicating with embedded apps
     over the air.<br>
     LE apps location:  \<Workspace Dir>\wiced\_btsdk\tools\btsdk-peer-apps-ble<br>
@@ -359,19 +369,19 @@ The following tool applications are installed on your computer either with Modus
 
 **Device Configurator:**<br>
 >   Use this GUI tool to create source code for a custom pin mapping for your device. Run this tool
-    from the Tools section of the ModusToolbox IDE QuickPanel, or by
-    right-clicking a project in the IDE Project Explorer pane and selecting the
-    ModusToolbox context menu.<br>
+    from the Tools section of the ModusToolbox&#8482; QuickPanel, or by
+    right-clicking a project in the Project Explorer pane and selecting the
+    ModusToolbox&#8482; context menu.<br>
     It is supported on Windows, Linux and macOS.<br>
     Note: The pin mapping is based on wiced\_platform.h for your board.<br>
     Location:  \<Install Dir>\tools_2.x\device-configurator
 
-**Bluetooth Configurator:**<br>
+**Bluetooth&#174; Configurator:**<br>
 >   Use this GUI tool to create and configure the LE GATT Database and the BR/EDR SDP Database, generated as source code for your
     application.<br>
-    Run this tool from the Tools section of the ModusToolbox IDE QuickPanel, or
-    by right-clicking a project in the IDE Project Explorer pane and selecting
-    the ModusToolbox context menu.<br>
+    Run this tool from the Tools section of the ModusToolbox&#8482; QuickPanel, or
+    by right-clicking a project in the Project Explorer pane and selecting
+    the ModusToolbox&#8482; context menu.<br>
     It is supported on Windows, Linux and macOS.<br>
     Location:  \<Install Dir>\tools_2.x\bt-configurator
 
@@ -379,10 +389,10 @@ The following tool applications are installed on your computer either with Modus
 To view application traces, there are 2 methods available. Note that the
 application needs to configure the tracing options.<br>
 
-1. WICED Peripheral UART - Open this port on your computer using a serial port
+1. "WICED Peripheral UART" - Open this port on your computer using a serial port
 utility such as Tera Term or PuTTY (usually using 115200 baud rate for non-Mesh apps, and 921600 for Mesh apps).<br>
-2. WICED HCI UART - Open this port on your computer using the Client Control
-application mentioned above (usually using 3M baud rate). Then run the BT Spy
+2. "WICED HCI UART" - Open this port on your computer using the Client Control
+application mentioned above (usually using 3M baud rate). Then run the BTSpy
 utility mentioned above.
 
 ## Using BSPs (platforms)
@@ -399,12 +409,12 @@ The application makefile has a default BSP. See "TARGET". The makefile also has 
 
 To create and use a complete custom BSP that you want to use in applications, perform the following steps:
 
-1. Select an existing BSP created through ModusToolbox Project Creator that you wish to use as a template.
+1. Select an existing BSP created through ModusToolbox&#8482; Project Creator that you wish to use as a template.
 2. Make a copy in the same folder and rename it. For example mtb\_shared\wiced\_btsdk\dev-kit\bsp\TARGET\_mybsp.<br/>
-   **Note:** This can be done in the system File Explorer and then refresh the workspace in ModusToolbox to see the new project.  Delete the .git sub-folder from the newly copied folder before refreshing in Eclipse.
+   **Note:** This can be done in the system File Explorer and then refresh the workspace in ModusToolbox&#8482; to see the new project.  Delete the .git sub-folder from the newly copied folder before refreshing in Eclipse.
    If done in the IDE, an error dialog may appear complaining about items in the .git folder being out of sync.  This can be resolved by deleting the .git sub-folder in the newly copied folder.
 
-3. In the new mtb\_shared\wiced\_btsdk\dev-kit\bsp\TARGET\_mybsp\<branch>\ folder, rename the existing/original (BSP).mk file to mybsp.mk.
+3. In the new mtb\_shared\wiced\_btsdk\dev-kit\bsp\TARGET\_mybsp\release-vX.X.X\ folder, rename the existing/original (BSP).mk file to mybsp.mk.
 4. In the application makefile, set TARGET=mybsp and add it to SUPPORTED\_TARGETS.
 5. In the application libs folder, edit the mtb.mk file and replace all instances of the template BSP name string with 'mybsp'.
 6. Update design.modus for your custom BSP if needed using the **Device Configurator** link under **Configurators** in the Quick Panel.
@@ -414,7 +424,7 @@ To create and use a complete custom BSP that you want to use in applications, pe
 
 To create a custom pin configuration to be used by multiple applications using an existing BSP that supports Device Configurator, perform the following steps:
 
-1. Create a folder COMPONENT\_(CUSTOM)\_design\_modus in the existing BSP folder. For example mtb\_shared\wiced\_btsdk\dev-kit\bsp\TARGET\_CYW920819EVB-02\<branch>\COMPONENT\_my\_design\_modus
+1. Create a folder COMPONENT\_(CUSTOM)\_design\_modus in the existing BSP folder. For example mtb\_shared\wiced\_btsdk\dev-kit\bsp\TARGET\_CYW920819EVB-02\release-vX.X.X\COMPONENT\_my\_design\_modus
 2. Copy the file design.modus from the reference BSP COMPONENT\_bsp\_design\_modus folder under mtb\_shared\wiced\_btsdk\dev-kit\bsp\ and place the file in the newly created COMPONENT\_(CUSTOM)\_design\_modus folder.
 3. In the application makefile, add the following two lines<br/>
    DISABLE\_COMPONENTS+=bsp\_design\_modus<br/>
