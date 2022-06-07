@@ -33,18 +33,42 @@
 
 /** @file
  *
- * This file defines the interface of OTA firmware upgrade service
+ * btstack.h
+ * This file is applicable for all devices with BTSTACK version lower than 3.0, i.e. 20xxx and 43012C0
  *
  */
+#ifndef __BTSTACK_H_
+#define __BTSTACK_H_
 
-#ifndef __APP_OTAFWU_H__
-#define __APP_OTAFWU_H__
+#include "wiced_hal_mia.h"
+#include "wiced_memory.h"
+#include "hidd_lib.h"
+#include "btstack_cfg.h"
 
-#ifdef OTA_FIRMWARE_UPGRADE
-# include "wiced.h"
-# include "wiced_bt_ota_firmware_upgrade.h"
-# define ota_is_active() wiced_ota_fw_upgrade_is_active()
-#else
-# define ota_is_active() FALSE
-#endif
-#endif // __APP_BATTERY_H__
+/******************************************************
+ *               defines
+ ******************************************************/
+
+/******************************************************
+ *               typedef
+ ******************************************************/
+
+/******************************************************
+ *               Macro Function Definitions
+ ******************************************************/
+#define app_poll_events() wiced_hal_mia_pollHardware()
+#define app_cfg_sec_mask() ( bt_cfg.security_requirement_mask )
+#define app_cfg_appearance ( bt_cfg.gatt_cfg.appearance )
+#define app_cfg_conn_param ( bt_cfg.ble_scan_cfg.conn_min_interval )
+
+/******************************************************
+ *               extern variables
+ ******************************************************/
+
+/******************************************************
+ *               Function Definitions
+ ******************************************************/
+void app_init( app_start_callback_t * p_bt_app_init, wiced_bt_management_cback_t * p_bt_management_cback );
+
+
+#endif // __BTSTACK_H_

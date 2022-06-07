@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021, Cypress Semiconductor Corporation (an Infineon company) or
+ * Copyright 2016-2022, Cypress Semiconductor Corporation (an Infineon company) or
  * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
  *
  * This software, including source code, documentation and related
@@ -42,8 +42,6 @@
 #include "ble.h"
 #include "bredr.h"
 
-extern wiced_bt_cfg_settings_t bt_cfg;
-extern uint8_t dev_local_name[];
 extern uint8_t blehid_rpt_map[];
 
 #if defined(MOUSE_XY_SIZE_16)

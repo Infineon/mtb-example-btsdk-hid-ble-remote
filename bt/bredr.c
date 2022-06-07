@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021, Cypress Semiconductor Corporation (an Infineon company) or
+ * Copyright 2016-2022, Cypress Semiconductor Corporation (an Infineon company) or
  * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
  *
  * This software, including source code, documentation and related
@@ -89,7 +89,7 @@ static const UINT8 wiced_bt_sdp_db[] =
         'C', 'y', 'p', 'r', 'e', 's', 's', ' ',
         'S', 'e', 'm', 'i', 'c', 'o', 'n', 'd', 'u', 'c', 't', 'o', 'r',
     SDP_ATTR_UINT2(ATTR_ID_HID_PARSER_VERSION, 0x0111),                 // 6 bytes==>0x9, 0x02, 0x01, 0x9, 0x01, 0x11(v1.1.1)
-    SDP_ATTR_UINT1(ATTR_ID_HID_DEVICE_SUBCLASS, 0x40),                  // 5 bytes==>0x9, 0x02, 0x01, 0x8, 0x40(keyboard)
+    SDP_ATTR_UINT1(ATTR_ID_HID_DEVICE_SUBCLASS, 0x0c),                  // 5 bytes==>0x9, 0x02, 0x01, 0x8, 0x0c(remote)
     SDP_ATTR_UINT1(ATTR_ID_HID_COUNTRY_CODE, 0x21),                     // 5 bytes==>0x9, 0x02, 0x01, 0x8, 0x21(USA)
     SDP_ATTR_BOOLEAN(ATTR_ID_HID_VIRTUAL_CABLE, HID_DEV_VIRTUAL_CABLE),          // 5 bytes==>0x9, 0x02, 0x01, 0x28, 0x1(TRUE)
     SDP_ATTR_BOOLEAN(ATTR_ID_HID_RECONNECT_INITIATE, HID_DEV_RECONN_INITIATE),   // 5 bytes==>0x9, 0x02, 0x01, 0x28, 0x1(TRUE)

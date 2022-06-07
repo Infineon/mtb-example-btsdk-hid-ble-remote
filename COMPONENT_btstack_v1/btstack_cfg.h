@@ -33,18 +33,15 @@
 
 /** @file
  *
- * This file defines the interface of OTA firmware upgrade service
- *
  */
+#ifndef __APP_CFG_H_
+#define __APP_CFG_H_
+#include "wiced_bt_cfg.h"
+#include "wiced_transport.h"
 
-#ifndef __APP_OTAFWU_H__
-#define __APP_OTAFWU_H__
+extern const wiced_bt_cfg_buf_pool_t wiced_bt_hid_cfg_buf_pools[WICED_BT_CFG_NUM_BUF_POOLS];
+extern wiced_bt_cfg_settings_t bt_cfg;
+extern uint8_t dev_local_name[];
 
-#ifdef OTA_FIRMWARE_UPGRADE
-# include "wiced.h"
-# include "wiced_bt_ota_firmware_upgrade.h"
-# define ota_is_active() wiced_ota_fw_upgrade_is_active()
-#else
-# define ota_is_active() FALSE
-#endif
-#endif // __APP_BATTERY_H__
+
+#endif // __APP_CFG_H_

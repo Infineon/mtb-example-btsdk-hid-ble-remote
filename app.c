@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021, Cypress Semiconductor Corporation (an Infineon company) or
+ * Copyright 2016-2022, Cypress Semiconductor Corporation (an Infineon company) or
  * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
  *
  * This software, including source code, documentation and related
@@ -620,16 +620,19 @@ static void APP_hci_key_event(uint8_t keyCode, wiced_bool_t keyDown)
         case KEY_IR:
             keyCode = IR_KEY_INDEX;
             break;
+
         case KEY_AUDIO:
             keyCode = AUDIO_KEY_INDEX;
             break;
-        case KEY_MOTION:          // ignored
-            break;
+
         case KEY_CONNECT:
             keyCode = CONNECT_KEY_INDEX;
             break;
-        // no known key, ignored
+
+//        case KEY_MOTION:          // ignored
+        // unknown key, ignored
         default:
+            WICED_BT_TRACE("\nFunction not supported");
             keyCode = ROLLOVER;     // mark as unhandled key
             break;
     }
@@ -891,9 +894,9 @@ wiced_result_t app_start(void)
     wiced_hidd_event_queue_init(&app.eventQueue, (uint8_t *)&app.events, APP_QUEUE_SIZE, APP_QUEUE_MAX);
 
     // register applicaton callbacks
-    hidd_register_app_callback(&appCallbacks);
+    hidd_link_register_callbacks(&appCallbacks);
 
-    hci_control_register_key_handler(APP_hci_key_event);
+    hidd_hci_control_register_key_handler(APP_hci_key_event);
 
     /* transport init */
     bt_init();
@@ -912,4 +915,127 @@ wiced_result_t app_start(void)
     WICED_BT_TRACE("\nFree RAM bytes=%d bytes", wiced_memory_get_free_bytes());
 
     return WICED_BT_SUCCESS;
+}
+
+#ifdef ANDROID_AUDIO
+/*
+ * bleremote ble link management callbacks
+ */
+wiced_result_t app_management_cback(wiced_bt_management_evt_t event, wiced_bt_management_evt_data_t *p_event_data)
+{
+    wiced_result_t result = WICED_RESUME_HIDD_LIB_HANDLER;
+
+    switch( event )
+    {
+        case BTM_ENCRYPTION_STATUS_EVT:
+            if (p_event_data->encryption_status.result == WICED_SUCCESS)
+            {
+                //configure ATT MTU size with peer device
+                wiced_bt_gatt_configure_mtu(blelink.gatts_conn_id, bt_cfg.gatt_cfg.max_mtu_size);
+            }
+            // let default library to handle the reset
+            break;
+    }
+    return result;
+}
+#else
+ #define app_management_cback NULL
+#endif
+
+/*
+ *  Entry point to the application. Set device configuration and start BT
+ *  stack initialization.  The actual application initialization will happen
+ *  when stack reports that BT device is ready.
+ */
+void application_start( void )
+{
+    extern const wiced_platform_led_config_t platform_led[];
+    extern const size_t led_count;
+
+    // Initialize LED/UART for debug
+    wiced_set_debug_uart(WICED_ROUTE_DEBUG_TO_PUART);
+    hidd_led_init(led_count, platform_led);
+
+    app_init(app_start, app_management_cback);
+
+#if (SLEEP_ALLOWED == 3)
+    hidd_allowed_hidoff(TRUE);
+#endif
+
+    WICED_BT_TRACE("\nDEV=%d Version:%d.%d Rev=%d Build=%d",hidd_chip_id(), WICED_SDK_MAJOR_VER, WICED_SDK_MINOR_VER, WICED_SDK_REV_NUMBER, WICED_SDK_BUILD_NUMBER);
+    WICED_BT_TRACE("\nSLEEP_ALLOWED=%d",SLEEP_ALLOWED);
+    WICED_BT_TRACE("\nLED=%d",LED_SUPPORT);
+
+#ifdef OTA_FIRMWARE_UPGRADE
+    WICED_BT_TRACE("\nOTA_FW_UPGRADE");
+ #ifdef OTA_SECURE_FIRMWARE_UPGRADE
+    WICED_BT_TRACE("\nOTA_SEC_FW_UPGRADE");
+ #endif
+#endif
+
+#ifdef SUPPORT_AUDIO
+ #ifdef CELT_ENCODER
+    WICED_BT_TRACE("\nENABLE_AUDIO(CELT)");
+ #elif defined(ADPCM_ENCODER)
+  #ifdef ANDROID_AUDIO
+   #ifdef ANDROID_AUDIO_1_0
+    WICED_BT_TRACE("\nANDROID_AUDIO(ADPCM)");
+   #else
+    WICED_BT_TRACE("\nANDROID_AUDIO 0.4(ADPCM)");
+   #endif
+  #else
+    WICED_BT_TRACE("\nENABLE_AUDIO(ADPCM)");
+  #endif
+ #else
+    WICED_BT_TRACE("\nENABLE_AUDIO(mSBC)");
+ #endif
+ #ifdef SUPPORT_DIGITAL_MIC
+    WICED_BT_TRACE("\nPDM");
+ #endif
+#endif
+
+#ifdef AUTO_RECONNECT
+    WICED_BT_TRACE("\nAUTO_RECONNECT");
+#endif
+
+#ifdef SKIP_CONNECT_PARAM_UPDATE_EVEN_IF_NO_PREFERED
+    WICED_BT_TRACE("\nSKIP_PARAM_UPDATE");
+#endif
+
+#ifdef START_ADV_WHEN_POWERUP_NO_CONNECTED
+    WICED_BT_TRACE("\nSTART_ADV_ON_POWERUP");
+#endif
+
+#ifdef CONNECTED_ADVERTISING_SUPPORTED
+    WICED_BT_TRACE("\nENABLE_CONNECTED_ADV");
+#endif
+
+#ifdef ENDLESS_LE_ADVERTISING
+    WICED_BT_TRACE("\nENDLESS_ADV");
+#endif
+
+#ifdef ASSYM_PERIPHERAL_LATENCY
+    WICED_BT_TRACE("\nASSYMETRIC_PERIPHERAL_LATENCY");
+#endif
+
+#ifdef LE_LOCAL_PRIVACY_SUPPORT
+    WICED_BT_TRACE("\nLE_LOCAL_PRIVACY_SUPPORT");
+#endif
+
+#ifdef SUPPORT_IR
+    WICED_BT_TRACE("\nENABLE_IR");
+#endif
+
+#ifdef EASY_PAIR
+    WICED_BT_TRACE("\nENABLE_EASY_PAIR");
+#endif
+
+#ifdef SUPPORTING_FINDME
+    WICED_BT_TRACE("\nENABLE_FINDME");
+#endif
+
+#ifdef FASTPAIR_ENABLE
+    WICED_BT_TRACE("\nFASTPAIR_ENABLE");
+#endif
+
 }

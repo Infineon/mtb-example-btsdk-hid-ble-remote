@@ -33,18 +33,37 @@
 
 /** @file
  *
- * This file defines the interface of OTA firmware upgrade service
+ * app.c
+ * This file is applicable for all devices with BTSTACK version lower than 3.0, i.e. 20xxx and 43012C0
  *
  */
+#include "app.h"
 
-#ifndef __APP_OTAFWU_H__
-#define __APP_OTAFWU_H__
+/******************************************************
+ *               defines
+ ******************************************************/
 
-#ifdef OTA_FIRMWARE_UPGRADE
-# include "wiced.h"
-# include "wiced_bt_ota_firmware_upgrade.h"
-# define ota_is_active() wiced_ota_fw_upgrade_is_active()
-#else
-# define ota_is_active() FALSE
-#endif
-#endif // __APP_BATTERY_H__
+/******************************************************
+ *               extern variables
+ ******************************************************/
+
+/******************************************************
+ *               data structure
+ ******************************************************/
+
+/******************************************************
+ *               variables
+ ******************************************************/
+
+/******************************************************
+ *               static function
+ ******************************************************/
+
+/******************************************************
+ *               Functions
+ ******************************************************/
+void app_init( app_start_callback_t * p_bt_app_init, wiced_bt_management_cback_t * p_bt_management_cback )
+{
+    hidd_register_cfg_buf_pools(wiced_bt_hid_cfg_buf_pools);
+    hidd_start_v(p_bt_app_init, p_bt_management_cback, &bt_cfg);
+}

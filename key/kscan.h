@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021, Cypress Semiconductor Corporation (an Infineon company) or
+ * Copyright 2016-2022, Cypress Semiconductor Corporation (an Infineon company) or
  * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
  *
  * This software, including source code, documentation and related
@@ -61,7 +61,7 @@ typedef void (kscan_poll_callback_t) (void *);
  *  None
  *
  *******************************************************************************/
-void kscan_init(uint8_t row, uint8_t col, app_poll_callback_t * pcb, keyPressDetected_callback_t * cb);
+void kscan_init(uint8_t row, uint8_t col, hidd_link_app_poll_callback_t * pcb, keyPressDetected_callback_t * cb);
 
 /*******************************************************************************
  * Function Name: void kscan_pollActivity(void)
