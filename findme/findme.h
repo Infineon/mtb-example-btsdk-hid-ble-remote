@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022, Cypress Semiconductor Corporation (an Infineon company) or
+ * Copyright 2016-2023, Cypress Semiconductor Corporation (an Infineon company) or
  * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
  *
  * This software, including source code, documentation and related
@@ -33,9 +33,9 @@
 
 /** @file
  *
- * BLE Remote find me
+ * Bluetooth LE Remote find me
  *
- * This file provides definitions and function prototypes for BLE remote find me functions
+ * This file provides definitions and function prototypes for LE remote find me functions
  *
  */
 

@@ -1,5 +1,5 @@
 #
-# Copyright 2016-2022, Cypress Semiconductor Corporation (an Infineon company) or
+# Copyright 2016-2023, Cypress Semiconductor Corporation (an Infineon company) or
 # an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
 #
 # This software, including source code, documentation and related
@@ -44,10 +44,9 @@ CONFIG=Debug
 VERBOSE=
 
 # default target
-TARGET=CYW920735Q60EVB-01
+TARGET=CYW920835M2EVB-01
 
 SUPPORTED_TARGETS = \
-  CYW920735Q60EVB-01 \
   CYW920835M2EVB-01 \
   CYBLE-343072-EVAL-M2B \
   CYBLE-333074-EVAL-M2B
@@ -75,12 +74,6 @@ FEATURES=
 COMPONENTS += bsp_design_modus
 COMPONENTS += hidd_lib2
 
-#ifeq ($(TARGET),CYW920735Q60EVB-01)
-# # use app specific design.modus
-# DISABLE_COMPONENTS+=bsp_design_modus
-# COMPONENTS+=CYW920735Q60EVB-01_RM_design_modus
-#endif
-
 #######################################################################################
 # App compile flag defaults
 #
@@ -99,7 +92,7 @@ TESTING_USING_HCI_DEFAULT=1
 #  SLEEP_ALLOWED=1  Allow sleep without shutdown
 #  SLEEP_ALLOWED=2  Allow sleep with shutdown
 #
-ifneq ($(filter CYW920835M2EVB-01 CYW920735Q60EVB-01 CYBLE-343072-EVAL-M2B CYBLE-333074-EVAL-M2B,$(TARGET)),)
+ifneq ($(filter CYW920835M2EVB-01 CYBLE-343072-EVAL-M2B CYBLE-333074-EVAL-M2B,$(TARGET)),)
  SLEEP_ALLOWED_DEFAULT=1
 else
  SLEEP_ALLOWED_DEFAULT=2
@@ -217,11 +210,11 @@ ifneq ($(filter CYW920835M2EVB-01 CYBLE-343072-EVAL-M2B CYBLE-333074-EVAL-M2B,$(
  ifeq ($(PDM),1)
   # use app specific design.modus
   DISABLE_COMPONENTS+=bsp_design_modus
-  COMPONENTS+=$(TARGET)_PDM_RM_design_modus
+  COMPONENTS+=$(subst -,_,$(TARGET))_PDM_RM_design_modus
  else
   # use app specific design.modus
   DISABLE_COMPONENTS+=bsp_design_modus
-  COMPONENTS+=$(TARGET)_RM_design_modus
+  COMPONENTS+=$(subst -,_,$(TARGET))_RM_design_modus
  endif
 endif
 

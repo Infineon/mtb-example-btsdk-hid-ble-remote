@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022, Cypress Semiconductor Corporation (an Infineon company) or
+ * Copyright 2016-2023, Cypress Semiconductor Corporation (an Infineon company) or
  * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
  *
  * This software, including source code, documentation and related
@@ -52,7 +52,7 @@
 #define SPD_RPT_DESCRIPTOR_SIZE 195
 
 /*****************************************************************************
- * This is the SDP database for the BT HID KB application.
+ * This is the SDP database for the Bluetooth HID KB application.
  * It defines 2 service records:
  *     UUID_SERVCLASS_HUMAN_INTERFACE,
  *     UUID_SERVCLASS_PNP_INFORMATION.
@@ -89,10 +89,10 @@ static const UINT8 wiced_bt_sdp_db[] =
         'C', 'y', 'p', 'r', 'e', 's', 's', ' ',
         'S', 'e', 'm', 'i', 'c', 'o', 'n', 'd', 'u', 'c', 't', 'o', 'r',
     SDP_ATTR_UINT2(ATTR_ID_HID_PARSER_VERSION, 0x0111),                 // 6 bytes==>0x9, 0x02, 0x01, 0x9, 0x01, 0x11(v1.1.1)
-    SDP_ATTR_UINT1(ATTR_ID_HID_DEVICE_SUBCLASS, 0x0c),                  // 5 bytes==>0x9, 0x02, 0x01, 0x8, 0x0c(remote)
-    SDP_ATTR_UINT1(ATTR_ID_HID_COUNTRY_CODE, 0x21),                     // 5 bytes==>0x9, 0x02, 0x01, 0x8, 0x21(USA)
-    SDP_ATTR_BOOLEAN(ATTR_ID_HID_VIRTUAL_CABLE, HID_DEV_VIRTUAL_CABLE),          // 5 bytes==>0x9, 0x02, 0x01, 0x28, 0x1(TRUE)
-    SDP_ATTR_BOOLEAN(ATTR_ID_HID_RECONNECT_INITIATE, HID_DEV_RECONN_INITIATE),   // 5 bytes==>0x9, 0x02, 0x01, 0x28, 0x1(TRUE)
+    SDP_ATTR_UINT1(ATTR_ID_HID_DEVICE_SUBCLASS, 0x40),                  // 5 bytes==>0x9, 0x02, 0x02, 0x8, 0x40(keyboard)
+    SDP_ATTR_UINT1(ATTR_ID_HID_COUNTRY_CODE, 0x21),                     // 5 bytes==>0x9, 0x02, 0x03, 0x8, 0x21(USA)
+    SDP_ATTR_BOOLEAN(ATTR_ID_HID_VIRTUAL_CABLE, HID_DEV_VIRTUAL_CABLE),          // 5 bytes==>0x9, 0x02, 0x04, 0x28, 0x1(TRUE)
+    SDP_ATTR_BOOLEAN(ATTR_ID_HID_RECONNECT_INITIATE, HID_DEV_RECONN_INITIATE),   // 5 bytes==>0x9, 0x02, 0x05, 0x28, 0x1(TRUE)
 
     SDP_ATTR_ID(ATTR_ID_HID_DESCRIPTOR_LIST), SDP_ATTR_SEQUENCE_1(SPD_RPT_DESCRIPTOR_SIZE+6), // 5 bytes ==>0x9, 0x02, 0x06, 0x35, 0xEF,
         SDP_ATTR_SEQUENCE_1(SPD_RPT_DESCRIPTOR_SIZE+4),                 // 2 bytes ==>0x35, 0xED,
@@ -138,7 +138,7 @@ static const UINT8 wiced_bt_sdp_db[] =
 //const uint16_t wiced_bt_sdp_db_size = (sizeof(wiced_bt_sdp_db));
 
 /*****************************************************************************
- * BT HID power management states configuration
+ * Bluetooth HID power management states configuration
  ****************************************************************************/
 static wiced_bt_hidd_pm_pwr_state_t bthid_powerStateList[] =
 {
@@ -172,7 +172,7 @@ static wiced_bt_hidd_pm_pwr_state_t bthid_powerStateList[] =
 //const uint8_t bthid_powerStateList_num = sizeof(bthid_powerStateList)/sizeof(wiced_bt_hidd_pm_pwr_state_t);
 
 /*****************************************************************************
- * BT HID power management states configuration used when sniff subrate (SSR) is enabled by host
+ * Bluetooth HID power management states configuration used when sniff subrate (SSR) is enabled by host
  ****************************************************************************/
 static wiced_bt_hidd_pm_pwr_state_t bthid_SSRPowerStatesList[] =
 {
@@ -257,7 +257,7 @@ void bredr_init()
     // Use this to find out the value of SPD_RPT_DESCRIPTOR_SIZE for the define
     // WICED_BT_TRACE("\nSize of SPD_RPT_DESCRIPTOR_SIZE is %d", sizeof(data));
 
-    /* BT HID power management configuration  */
+    /* Bluetooth HID power management configuration  */
 //    wiced_bt_hidd_configure_power_management_params(bthid_powerStateList, sizeof(bthid_powerStateList)/sizeof(wiced_bt_hidd_pm_pwr_state_t),
 //                                               bthid_SSRPowerStatesList, sizeof(bthid_SSRPowerStatesList)/sizeof(wiced_bt_hidd_pm_pwr_state_t));
 

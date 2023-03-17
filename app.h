@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022, Cypress Semiconductor Corporation (an Infineon company) or
+ * Copyright 2016-2023, Cypress Semiconductor Corporation (an Infineon company) or
  * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
  *
  * This software, including source code, documentation and related
@@ -52,9 +52,9 @@
 /*******************************************************************************
 * Types and Defines
 *******************************************************************************/
-#define BT_LOCAL_NAME "CY REMOTE"
+#define BT_LOCAL_NAME "IFX REMOTE"
 
-#if is_20735Family
+#if is_20835Family
  #define NUM_KEYSCAN_ROWS    5  // Num of Rows in keyscan matrix
  #define NUM_KEYSCAN_COLS    4  // Num of Cols in keyscan matrix
  #define CONNECT_KEY_INDEX   18 // need to find out from hardware
@@ -201,7 +201,7 @@ void app_transportStateChangeNotification(uint32_t newState);
  * Function Name: app_start
  ********************************************************************************
  * Summary: This is application start function. After system initialization is done, when the
- *          bt management calls with BTM_ENABLED_EVT, this function is called to
+ *          Bluetooth management calls with BTM_ENABLED_EVT, this function is called to
  *          start application
  *
  * Parameters:

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022, Cypress Semiconductor Corporation (an Infineon company) or
+ * Copyright 2016-2023, Cypress Semiconductor Corporation (an Infineon company) or
  * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
  *
  * This software, including source code, documentation and related
@@ -33,9 +33,9 @@
 
 /** @file
 *
-* Remote Control Application
+* Bluetooth LE Remote Control Application
 *
-* The BLE Remote Control application is a single chip SoC compliant with HID over GATT Profile (HOGP).
+* The Bluetooth LE Remote Control application is a single chip SoC compliant with HID over GATT Profile (HOGP).
 * Supported features include key, microphone (voice over HOGP), Infrared Transmit (IR TX), touchpad.
 *
 * During initialization the app registers with LE stack, WICED HID Device Library and
@@ -548,7 +548,7 @@ static void APP_generateAndTxReports(void)
  *     transports
  *   - If the active transport is connected, requests generation of reports via
  *     generateAndTransmitReports()
- *   - Does connect button polling and informs the BT transport once the connect
+ *   - Does connect button polling and informs the Bluetooth transport once the connect
  *     button has been held for the configured amount of time.
  *  Note: transport may be NULL if no transport context is required - like when
  *  none
@@ -875,7 +875,7 @@ static hidd_link_callback_t appCallbacks =
  * Function Name: app_start()
  ********************************************************************************
  * Summary: This is application start function. After system is up, when the
- *          bt management calls with BTM_ENABLED_EVT, this function is called to
+ *          Bluetooth management calls with BTM_ENABLED_EVT, this function is called to
  *          start application
  *
  * Parameters:
@@ -919,7 +919,7 @@ wiced_result_t app_start(void)
 
 #ifdef ANDROID_AUDIO
 /*
- * bleremote ble link management callbacks
+ * LE link management callbacks
  */
 wiced_result_t app_management_cback(wiced_bt_management_evt_t event, wiced_bt_management_evt_data_t *p_event_data)
 {
@@ -943,9 +943,9 @@ wiced_result_t app_management_cback(wiced_bt_management_evt_t event, wiced_bt_ma
 #endif
 
 /*
- *  Entry point to the application. Set device configuration and start BT
+ *  Entry point to the application. Set device configuration and start Bluetooth
  *  stack initialization.  The actual application initialization will happen
- *  when stack reports that BT device is ready.
+ *  when stack reports that Bluetooth device is ready.
  */
 void application_start( void )
 {

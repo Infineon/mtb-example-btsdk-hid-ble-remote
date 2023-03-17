@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022, Cypress Semiconductor Corporation (an Infineon company) or
+ * Copyright 2016-2023, Cypress Semiconductor Corporation (an Infineon company) or
  * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
  *
  * This software, including source code, documentation and related
@@ -44,13 +44,13 @@
 #include "kscan.h"
 
 /// Maximum number of keys in a standard key report. Technically the report is
-/// limited to 6 keys. A BLE ATT can hold 23 bytes. We'll
+/// limited to 6 keys. An LE ATT can hold 23 bytes. We'll
 /// only use 6. The length of a non-boot mode report will be set through the config
 /// record
 #define KEY_MAX_KEYS_IN_STD_REPORT    6
 
 /// Maximum number of bytes in the bit-mapped key report structure.
-/// A BLE ATT can hold 23 bytes.
+/// An LE ATT can hold 23 bytes.
 #define KEY_NUM_BYTES_IN_BIT_MAPPED_REPORT   (((BITMAP_MAX-1)/8)+1)
 #define KEY_NUM_BYTES_IN_USER_DEFINED_REPORT   8
 

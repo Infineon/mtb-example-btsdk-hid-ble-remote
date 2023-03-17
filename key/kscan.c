@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022, Cypress Semiconductor Corporation (an Infineon company) or
+ * Copyright 2016-2023, Cypress Semiconductor Corporation (an Infineon company) or
  * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
  *
  * This software, including source code, documentation and related
@@ -61,7 +61,7 @@ static void kscan_pollEvent(void * userData)
     {
         if (ks.appCb)
         {
-#if !defined(REMOTE_PLATFORM) && !is_20735Family
+#if !defined(REMOTE_PLATFORM) && !is_20835Family
             // EVB-02 cannot produce full set of key matrix, for
             // connect & audio buttons, we need to be translated to actual key index
             switch (event.keyEvent.keyCode) {

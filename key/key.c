@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022, Cypress Semiconductor Corporation (an Infineon company) or
+ * Copyright 2016-2023, Cypress Semiconductor Corporation (an Infineon company) or
  * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
  *
  * This software, including source code, documentation and related
@@ -93,7 +93,7 @@ enum KeyType
 *****************************************************************************/
 KbKeyConfig kbKeyConfig[] =
 {
-#if is_20735Family // 5x4
+#if is_20835Family // 5x4
  #ifdef ANDROID_AUDIO
     // Column 0:  order is row0 ->row4
     {KEY_TYPE_STD,              USB_USAGE_1},       //#0, 1
