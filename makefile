@@ -126,10 +126,6 @@ OTA_SEC_FW_UPGRADE_DEFAULT=0
 #
 AUDIO_DEFAULT=GOOGLE
 PDM_DEFAULT=0
-ifneq ($(filter CYW920835M2EVB-01 CYBLE-343072-EVAL-M2B CYBLE-333074-EVAL-M2B,$(TARGET)),)
-# Digital MIC is conflict with LED, enabling DMIC will disable LED
-# PDM_DEFAULT=1
-endif
 
 ####################################################
 # Link related flags
@@ -206,7 +202,7 @@ else
  MIC=Analog
 endif
 
-ifneq ($(filter CYW920835M2EVB-01 CYBLE-343072-EVAL-M2B CYBLE-333074-EVAL-M2B,$(TARGET)),)
+ifeq ($(filter CYW920835M2EVB-01 CYBLE-343072-EVAL-M2B CYBLE-333074-EVAL-M2B,$(TARGET)),)
  ifeq ($(PDM),1)
   # use app specific design.modus
   DISABLE_COMPONENTS+=bsp_design_modus

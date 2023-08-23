@@ -46,7 +46,7 @@ typedef struct {
     keyPressDetected_callback_t * appCb;
 } kscan_data_t;
 
-static kscan_data_t ks = {};
+static kscan_data_t ks = {0};
 
 /////////////////////////////////////////////////////////////////////////////////
 /// This function polls for key activity and queues any key events in the

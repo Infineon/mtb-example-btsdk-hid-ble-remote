@@ -133,7 +133,7 @@ typedef struct {
     wiced_timer_t conn_param_update_timer;
 } ble_data_t;
 
-static ble_data_t ble = {};
+static ble_data_t ble = {0};
 
 /*****************************************************************************
  * This is the report map for HID Service

@@ -174,16 +174,29 @@ Application settings below are common for all BTSDK applications and can be conf
    - CYW989820M2EVB-01: SWD hardware debugging requires a fly-wire connection to use P14 for SWDIO. P2 is connected directly to SWDCK / ARD_D4. Fly-wire P14 / ARD_D8 on J3.10 to J4.3 / ARD_D5 to connect SWDIO.
 
    - SWD hardware debugging is not supported on the following:
-   >- CYW920721M2EVK-01
-   >- CYW920835REF-RCU-01
-   >- CYW9M2BASE-43012BT
-   >- CYBT-423054-EVAL
-   >- CYBT-423060-EVAL
-   >- CYBT-483056-EVAL
-   >- CYBT-483062-EVAL
-   >- CYW955572BTEVK-01
+      - CYW920721M2EVK-01
+      - CYW920835REF-RCU-01
+      - CYW9M2BASE-43012BT
+      - CYBT-423054-EVAL
+      - CYBT-423060-EVAL
+      - CYBT-483056-EVAL
+      - CYBT-483062-EVAL
+      - CYW955572BTEVK-01
+      - CYW943022BTEVK-01
 
-## Building code examples
+##### DIRECT_LOAD
+> BTSDK chips support downloading applications either to FLASH storage or to RAM storage. Some chips support only one or the other, and some chips support both.
+
+> If a chip only supports one or the other, this variable is not applicable, applications will be downloaded to the appropriate storage supported by the device.
+
+> If a chip supports both FLASH and RAM downloads, the default is to download to FLASH, and the DIRECT_LOAD make variable may be set to 1 in the application makefile (or in the command line make command) to override the default and download to RAM.
+
+> Currently, the following chips support both FLASH and RAM download and can set DIRECT_LOAD=1 if desired:
+>
+   - CYW20835
+   - CYW20706
+
+## Building and downloading code examples
 
 **Using the ModusToolbox&#8482; Eclipse IDE**
 
@@ -213,8 +226,6 @@ Application settings below are common for all BTSDK applications and can be conf
    > make program<br/><br>
    Note: make program = make build + make qprogram
 
-## Downloading an application to a board
-
 If you have issues downloading to the board, follow the steps below:
 
 - Press and hold the 'Recover' button on the board.
@@ -222,7 +233,7 @@ If you have issues downloading to the board, follow the steps below:
 - Release the 'Reset' button.
 - After one second, release the 'Recover' button.
 
-Note: this is only applicable to boards that download application images to FLASH storage. Boards that only support RAM download (DIRECT_LOAD) such as CYW9M2BASE-43012BT can be power cycled to boot from ROM.
+Note: this is only applicable to boards that download application images to FLASH storage. Boards that only support RAM download (DIRECT_LOAD) such as CYW9M2BASE-43012BT or CYW943022BTEVK-01 can be power cycled to boot from ROM.
 
 ## Over The Air (OTA) Firmware Upgrade
 Applications that support OTA upgrade can be updated via the peer OTA app in:<br>
@@ -273,6 +284,8 @@ Note: this is a list of all features and profiles supported in BTSDK, but some A
     - [CYW920835REF-RCU-01](https://github.com/Infineon/TARGET_CYW920835REF-RCU-01), [CYW920835M2EVB-01](https://github.com/Infineon/TARGET_CYW920835M2EVB-01), [CYBLE-343072-EVAL-M2B](https://github.com/Infineon/TARGET_CYBLE-343072-EVAL-M2B), [CYBLE-333074-EVAL-M2B](https://github.com/Infineon/TARGET_CYBLE-333074-EVAL-M2B), [CYBLE-343072-MESH](https://github.com/Infineon/TARGET_CYBLE-343072-MESH)
 - [CYW43012C0 chip](https://github.com/Infineon/43012C0)
     - [CYW9M2BASE-43012BT](https://github.com/Infineon/TARGET_CYW9M2BASE-43012BT), [CYW943012BTEVK-01](https://github.com/Infineon/TARGET_CYW943012BTEVK-01)
+- [CYW43022C1 chip](https://github.com/Infineon/43022C1)
+    - [CYW943022BTEVK-01](https://github.com/Infineon/TARGET_CYW943022BTEVK-01)
 - [CYW20736A1 chip](https://github.com/Infineon/20736A1)
     - [CYW920736M2EVB-01](https://github.com/Infineon/TARGET_CYW920736M2EVB-01)
 - [CYW30739A0 chip](https://github.com/Infineon/30739A0)
@@ -458,3 +471,6 @@ BTSDK API documentation is available [online](https://infineon.github.io/btsdk-d
 Note: For offline viewing, git clone the [documentation repo](https://github.com/Infineon/btsdk-docs)
 
 BTSDK Technical Brief and Release Notes are available [online](https://community.infineon.com/t5/Bluetooth-SDK/bd-p/ModusToolboxBluetoothSDK)
+
+<br>
+<sup>The Bluetooth&#174; word mark and logos are registered trademarks owned by Bluetooth SIG, Inc., and any use of such marks by Infineon is under license.</sup>

@@ -157,9 +157,9 @@ hidd_microphone_enhanced_config_t blehid_audiocfg =
 };
 
 // data defines
-uint8_t             voice_rpt[AUDIO_MTU_SIZE] = {};
-hidd_voice_report_t audioData[AUDIO_FIFO_CNT] = {};
-uint16_t            dataCount[AUDIO_FIFO_CNT] = {};
+uint8_t             voice_rpt[AUDIO_MTU_SIZE] = {0};
+hidd_voice_report_t audioData[AUDIO_FIFO_CNT] = {0};
+uint16_t            dataCount[AUDIO_FIFO_CNT] = {0};
 hidd_microphone_config_t audioConfig = {
     .mic_codec = NULL,
     .audio_fifo = audioData,

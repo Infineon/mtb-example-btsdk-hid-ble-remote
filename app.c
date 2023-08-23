@@ -902,6 +902,30 @@ wiced_result_t app_start(void)
     bt_init();
     hidd_sleep_configure(&hidd_link_sleep_config);
 
+#ifdef SUPPORT_AUDIO
+ #ifdef ADPCM_ENCODER
+    char audio_capa=HCI_CONTROL_HIDD_AUDIO_SUPPORT | HCI_CONTROL_HIDD_AUDIO_8K | HCI_CONTROL_HIDD_AUDIO_16K | HCI_CONTROL_HIDD_AUDIO_ADPCM;
+ #else
+  #ifdef CELT_ENCODER
+    char audio_capa=HCI_CONTROL_HIDD_AUDIO_SUPPORT | HCI_CONTROL_HIDD_AUDIO_8K | HCI_CONTROL_HIDD_AUDIO_16K | HCI_CONTROL_HIDD_AUDIO_OPUS;
+  #else
+    char audio_capa=HCI_CONTROL_HIDD_AUDIO_SUPPORT | HCI_CONTROL_HIDD_AUDIO_8K | HCI_CONTROL_HIDD_AUDIO_16K | HCI_CONTROL_HIDD_AUDIO_MSBC;
+  #endif
+ #endif
+#else
+    char audio_capa=0;
+#endif
+
+    char mouse_capa=0;
+
+#ifdef SUPPORT_IR
+    char ir_capa=HCI_CONTROL_HIDD_IR_SUPPORT;
+#else
+    char ir_capa=0;
+#endif
+
+    hidd_hci_control_set_capability(audio_capa, mouse_capa, ir_capa);
+
     /* component/peripheral init */
     bat_init(APP_shutdown);
     ir_init(IR_TX_GPIO);
