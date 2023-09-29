@@ -37,8 +37,8 @@
  *
  */
 
-#ifndef __BLEAPP_APPIRTX_H__
-#define __BLEAPP_APPIRTX_H__
+#ifndef __LEAPP_APPIRTX_H__
+#define __LEAPP_APPIRTX_H__
 
 #ifdef REMOTE_PLATFORM
  #define IR_TX_GPIO           WICED_P38
@@ -62,4 +62,4 @@
  #define ir_is_active() FALSE
 #endif //SUPPORT_IR
 
-#endif // __BLEAPP_APPIRTX_H__
+#endif // __LEAPP_APPIRTX_H__

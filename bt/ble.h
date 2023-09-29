@@ -33,7 +33,7 @@
 
 /** @file
  *
- * BR/EDR function and data
+ * Bluetooth LE function and data
  *
  */
 #ifndef __APP_BLE_H__
@@ -238,6 +238,21 @@ uint16_t ble_get_cccd_flag(CLIENT_CONFIG_NOTIF_T idx);
  *
  *******************************************************************************/
 void ble_updateClientConfFlags(uint16_t enable, uint16_t featureBit);
+
+/********************************************************************************
+ * Function Name: UINT8 ble_params_is_expected()
+ ********************************************************************************
+ * Summary: Check the RCU ble parameters is updated to expected setting or not
+ *
+ * Parameters:
+ *  none
+ *
+ * Return:
+ *  FALSE : not expected configuration ble parameters
+ *  TRUE  : expected configuration ble parameters
+ *
+ *******************************************************************************/
+wiced_bool_t ble_params_is_expected(void);
 
 /*******************************************************************************
  * Function Name: void ble_init()

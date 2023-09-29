@@ -200,17 +200,16 @@ Application settings below are common for all BTSDK applications and can be conf
 
 **Using the ModusToolbox&#8482; Eclipse IDE**
 
-1. Install ModusToolbox&#8482; 2.2 (or higher).
+1. Install ModusToolbox&#8482; 2.4.1 (or higher).
 2. In the ModusToolbox&#8482; Eclipse IDE, click the **New Application** link in the Quick Panel (or, use **File > New > ModusToolbox IDE Application**).
 3. Pick your board for BTSDK under AIROC&#8482; Bluetooth&#174; BSPs.
 4. Select the application in the IDE.
 5. In the Quick Panel, select **Build** to build the application.
 6. To program the board (download the application), select **Program** in the Launches section of the Quick Panel.
 
-
 **Using command line**
 
-1. Install ModusToolbox&#8482; 2.2 (or higher).
+1. Install ModusToolbox&#8482; 2.4.1 (or higher).
 2. On Windows, use Cygwin from \ModusToolbox\tools_2.x\modus-shell\Cygwin.bat to build apps.
 3. Use the tool 'project-creator-cli' under \ModusToolbox\tools_2.x\project-creator\ to create your application.<br/>
    > project-creator-cli --board-id (BSP) --app-id (appid) -d (dir) <br/>
@@ -387,6 +386,8 @@ The following tool applications are installed on your computer either with Modus
     Note: The pin mapping is based on wiced\_platform.h for your board.<br>
     Location:  \<Install Dir>\tools_2.x\device-configurator
 
+Note: Not all BTSDK chips support Device Configurator. BSPs using the following devices do not currently support Device Configurator: CYW20706, CYW20736
+
 **Bluetooth&#174; Configurator:**<br>
 >   Use this GUI tool to create and configure the LE GATT Database and the BR/EDR SDP Database, generated as source code for your
     application.<br>
@@ -416,47 +417,7 @@ The application makefile has a default BSP. See "TARGET". The makefile also has 
 
 #### b. Custom BSP
 
-**Complete BSP**
-
-To create and use a complete custom BSP that you want to use in applications, perform the following steps:
-
-1. Select an existing BSP created through ModusToolbox&#8482; Project Creator that you wish to use as a template.
-2. Make a copy in the same folder and rename it. For example mtb\_shared\wiced\_btsdk\dev-kit\bsp\TARGET\_mybsp.<br/>
-   **Note:** This can be done in the system File Explorer and then refresh the workspace in ModusToolbox&#8482; to see the new project.  Delete the .git sub-folder from the newly copied folder before refreshing in Eclipse.
-   If done in the IDE, an error dialog may appear complaining about items in the .git folder being out of sync.  This can be resolved by deleting the .git sub-folder in the newly copied folder.
-
-3. In the new mtb\_shared\wiced\_btsdk\dev-kit\bsp\TARGET\_mybsp\release-vX.X.X\ folder, rename the existing/original (BSP).mk file to mybsp.mk.
-4. In the application makefile, set TARGET=mybsp and add it to SUPPORTED\_TARGETS.
-5. In the application libs folder, edit the mtb.mk file and replace all instances of the template BSP name string with 'mybsp'.
-6. Update design.modus for your custom BSP if needed using the **Device Configurator** link under **Configurators** in the Quick Panel.
-7. Update the application makefile as needed for other custom BSP specific attributes and build the application.
-
-**Custom Pin Configuration Only - Multiple Apps**
-
-To create a custom pin configuration to be used by multiple applications using an existing BSP that supports Device Configurator, perform the following steps:
-
-1. Create a folder COMPONENT\_(CUSTOM)\_design\_modus in the existing BSP folder. For example mtb\_shared\wiced\_btsdk\dev-kit\bsp\TARGET\_CYW920819EVB-02\release-vX.X.X\COMPONENT\_my\_design\_modus
-2. Copy the file design.modus from the reference BSP COMPONENT\_bsp\_design\_modus folder under mtb\_shared\wiced\_btsdk\dev-kit\bsp\ and place the file in the newly created COMPONENT\_(CUSTOM)\_design\_modus folder.
-3. In the application makefile, add the following two lines<br/>
-   DISABLE\_COMPONENTS+=bsp\_design\_modus<br/>
-   COMPONENTS+=(CUSTOM)\_design\_modus<br/>
-   (for example COMPONENTS+=my\_design\_modus)
-4. Update design.modus for your custom pin configuration if needed using the **Device Configurator** link under **Configurators** in the Quick Panel.
-5. Building of the application will generate pin configuration source code under a GeneratedSource folder in the new COMPONENT\_(CUSTOM)\_design\_modus folder.
-
-**Custom Pin Configuration Only - Per App**
-
-To create a custom configuration to be used by a single application from an existing BSP that supports Device Configurator, perform the following steps:
-
-1. Create a folder COMPONENT\_(BSP)\_design\_modus in your application. For example COMPONENT\_CYW920721M2EVK-02\_design\_modus
-2. Copy the file design.modus from the reference BSP under mtb\_shared\wiced\_btsdk\dev-kit\bsp\ and place the file in this folder.
-3. In the application makefile, add the following two lines<br/>
-   DISABLE\_COMPONENTS+=bsp\_design\_modus<br/>
-   COMPONENTS+=(BSP)\_design\_modus<br/>
-   (for example COMPONENTS+=CYW920721M2EVK-02\_design\_modus)
-4. Update design.modus for your custom pin configuration if needed using the **Device Configurator** link under **Configurators** in the Quick Panel.
-5. Building of the application will generate pin configuration source code under the GeneratedSource folder in your application.
-
+To create a custom BSP from a BSP template for BTSDK devices, see the following KBA article: [KBA238530](https://community.infineon.com/t5/Knowledge-Base-Articles/Create-custom-BTSDK-BSP-using-ModusToolbox-version-3-x-KBA238530/ta-p/479355)
 
 ## Using libraries
 

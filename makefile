@@ -202,18 +202,6 @@ else
  MIC=Analog
 endif
 
-ifeq ($(filter CYW920835M2EVB-01 CYBLE-343072-EVAL-M2B CYBLE-333074-EVAL-M2B,$(TARGET)),)
- ifeq ($(PDM),1)
-  # use app specific design.modus
-  DISABLE_COMPONENTS+=bsp_design_modus
-  COMPONENTS+=$(subst -,_,$(TARGET))_PDM_RM_design_modus
- else
-  # use app specific design.modus
-  DISABLE_COMPONENTS+=bsp_design_modus
-  COMPONENTS+=$(subst -,_,$(TARGET))_RM_design_modus
- endif
-endif
-
 #
 # App defines
 #
@@ -265,6 +253,8 @@ endif
 
 ifeq ($(AUDIO),OPUS)
  CY_APP_DEFINES += -DSUPPORT_AUDIO -DENABLE_ADC_AUDIO_ENHANCEMENTS -DCELT_ENCODER -DHID_AUDIO -DATT_MTU_SIZE_180
+ # for *.mk to include CYWxxxxxx_OPUS_CELT.cgs instead of CYWxxxxxxx.cgs
+ OPUS_CELT_ENCODER = 1
  $(info Audio OPUS encoding $(MIC) MIC)
 else
  ifeq ($(AUDIO),GOOGLE04)

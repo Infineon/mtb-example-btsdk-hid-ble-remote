@@ -54,12 +54,7 @@
  #ifdef ATT_MTU_SIZE_180
   #define AUDIO_MTU_SIZE 180
  #else
-  #ifdef ANDROID_AUDIO_1_0
-   #define AUDIO_MTU_SIZE 160
-   #define AUDIO_MTU_BASIC_SIZE 20
-  #else
-   #define AUDIO_MTU_SIZE 20
-  #endif
+  #define AUDIO_MTU_SIZE 160
  #endif
 
  extern uint8_t voice_rpt[];
@@ -100,7 +95,7 @@
   #define audio_MODE_RD()   audio_queue_event(HID_EVENT_AUDIO_MODE)
  #else
   #define audio_flush_data()
-  #define audio_DATA()      audio_procEvtVoice();
+  #define audio_DATA()      audio_procEvtVoice()
   #define audio_STOP()      audio_stop()
   #define audio_START()     audio_start()
   #define audio_STOP_REQ()  audio_stop_request()

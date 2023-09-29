@@ -131,8 +131,8 @@ KbKeyConfig kbKeyConfig[] =
     {KEY_TYPE_STD,              0x28},  //#4, ENTER touchpad
 
     // Column 1: order is row0 ->row4
-    {KEY_TYPE_STD,              0x21},  //#5,  4
-    {KEY_TYPE_STD,              0x22},  //#6,  5
+    {KEY_TYPE_STD,              0x21},  //#5, 4
+    {KEY_TYPE_STD,              0x22},  //#6, 5
     {KEY_TYPE_STD,              0x23},  //#7, 6
     {KEY_TYPE_STD,              0x7f},  //#8, MUTE
     {KEY_TYPE_STD,              0xf1},  //#9, BACK

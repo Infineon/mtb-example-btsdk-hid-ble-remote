@@ -127,7 +127,7 @@ wiced_bt_gatt_status_t blehid_app_gatts_req_write_callback( uint16_t conn_id, wi
 }
 
 /*****************************************************************************
- * data for ble module
+ * data for LE module
  ****************************************************************************/
 typedef struct {
     wiced_timer_t conn_param_update_timer;
@@ -165,7 +165,7 @@ attribute_t blehid_gattAttributes[] =
     {
         HANDLE_APP_GAP_SERVICE_CHAR_PERI_PREFER_CONNPARAM_VAL,
         8,
-        &bt_cfg.ble_scan_cfg.conn_min_interval //fixed
+        &bt_cfg.ble_scan_cfg.conn_min_interval
     },
     {
         HANDLE_APP_DEV_INFO_SERVICE_CHAR_PNP_ID_VAL,
@@ -340,7 +340,6 @@ attribute_t blehid_gattAttributes[] =
     },
 };
 const uint16_t blehid_gattAttributes_size = sizeof(blehid_gattAttributes)/sizeof(attribute_t);
-
 
 /*****************************************************************************
  * This is the GATT database for the LE HID Remote application.  It defines
@@ -1391,8 +1390,12 @@ static void BLE_transportStateChangeNotification(uint32_t newState)
             WICED_BT_TRACE("\nhost NOT found!");
         }
 
-        //start 15 second timer to make sure connection param update is requested before SDS
-        wiced_start_timer(&ble.conn_param_update_timer,15000); //15 seconds. timeout in ms
+        if(ble_params_is_expected() == FALSE)
+        {
+            //start 15 second timer to make sure connection param update is requested before SDS
+            WICED_BT_TRACE("\n%s start 15s timer", __FUNCTION__);
+            wiced_start_timer(&ble.conn_param_update_timer, 15000); //15 seconds. timeout in ms
+        }
         break;
     }
 
@@ -1479,7 +1482,6 @@ static void BLE_setUpAdvData(void)
 {
     wiced_bt_ble_advert_elem_t app_adv_elem[4];
     uint8_t app_adv_flag         = BTM_BLE_LIMITED_DISCOVERABLE_FLAG | BTM_BLE_BREDR_NOT_SUPPORTED;
-    uint16_t app_adv_appearance  = APPEARANCE_GENERIC_REMOTE_CONTROL;
     uint16_t app_adv_service     = UUID_SERVCLASS_LE_HID;
 
     // flag
@@ -1490,7 +1492,7 @@ static void BLE_setUpAdvData(void)
     // Appearance
     app_adv_elem[1].advert_type  = BTM_BLE_ADVERT_TYPE_APPEARANCE;
     app_adv_elem[1].len          = sizeof(uint16_t);
-    app_adv_elem[1].p_data       = (uint8_t *)&app_adv_appearance;
+    app_adv_elem[1].p_data       = (uint8_t *)&bt_cfg.gatt_cfg.appearance;
 
     //16 bits Service: UUID_SERVCLASS_LE_HID
     app_adv_elem[2].advert_type  = BTM_BLE_ADVERT_TYPE_16SRV_COMPLETE;
@@ -1540,6 +1542,37 @@ uint16_t ble_get_cccd_flag(CLIENT_CONFIG_NOTIF_T idx)
 void ble_updateClientConfFlags(uint16_t enable, uint16_t featureBit)
 {
     BLE_updateGattMapWithNotifications(hidd_host_set_flags(blelink.gatts_peer_addr, enable, featureBit));
+}
+
+/********************************************************************************
+ * Function Name: UINT8 ble_params_is_expected()
+ ********************************************************************************
+ * Summary: Check the RCU ble parameters is updated to expected setting or not
+ *
+ * Parameters:
+ *  none
+ *
+ * Return:
+ *  FALSE : not expected configuration ble parameters
+ *  TRUE  : expected configuration ble parameters
+ *
+ *******************************************************************************/
+wiced_bool_t ble_params_is_expected(void)
+{
+    wiced_bool_t ret = 0;
+
+    if ((wiced_blehidd_get_connection_interval() <  hidd_cfg_p_scan()->conn_min_interval) ||
+        (wiced_blehidd_get_connection_interval() > hidd_cfg_p_scan()->conn_max_interval) ||
+        (wiced_blehidd_get_peripheral_latency() != hidd_cfg_p_scan()->conn_latency))
+    {
+        ret = FALSE;
+    }
+    else
+    {
+        ret = TRUE;
+    }
+
+    return ret;
 }
 
 /********************************************************************************

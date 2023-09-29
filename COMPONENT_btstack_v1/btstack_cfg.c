@@ -37,6 +37,7 @@
 #include "btstack.h"
 #include "app.h"
 
+#define MAX_MPU_SIZE                     251
 uint8_t dev_local_name[]                 = BT_LOCAL_NAME;
 
 /*****************************************************************************
@@ -83,11 +84,17 @@ wiced_bt_cfg_settings_t bt_cfg =
         .low_duty_conn_scan_window       = WICED_BT_CFG_DEFAULT_LOW_DUTY_CONN_SCAN_WINDOW,   /**< Low duty cycle connection scan window */
         .low_duty_conn_duration          = 30,                                               /**< Low duty cycle connection duration in seconds (0 for infinite) */
 
-#if defined(CELT_ENCODER) || defined(ADPCM_ENCODER)
+#if defined(CELT_ENCODER)
         /* Connection configuration */
         .conn_min_interval               = 16,                                               /**< Minimum connection interval */
         .conn_max_interval               = 16,                                               /**< Maximum connection interval */
         .conn_latency                    = 49,                                               /**< Connection latency */
+        .conn_supervision_timeout        = 500,                                              /**< Connection link supervision timeout */
+#elif defined(ADPCM_ENCODER)
+        /* Connection configuration */
+        .conn_min_interval               = 12,                                               /**< Minimum connection interval */
+        .conn_max_interval               = 12,                                               /**< Maximum connection interval */
+        .conn_latency                    = 63,                                               /**< Connection latency */
         .conn_supervision_timeout        = 500,                                              /**< Connection link supervision timeout */
 #else
         /* Connection configuration */
@@ -136,12 +143,12 @@ wiced_bt_cfg_settings_t bt_cfg =
 
     .gatt_cfg = /* GATT configuration */
     {
-        .appearance                     = APPEARANCE_GENERIC_TAG,                            /**< GATT appearance (see gatt_appearance_e) */
+        .appearance                     = APPEARANCE_GENERIC_REMOTE_CONTROL,                 /**< GATT appearance (see gatt_appearance_e) */
         .client_max_links               = 1,                                                 /**< Client config: maximum number of servers that local client can connect to  */
         .server_max_links               = 2,                                                 /**< Server config: maximum number of remote clients connections allowed by the local */
-        .max_attr_len                   = 246,                                               /**< Maximum attribute length; gki_cfg must have a corresponding buffer pool that can hold this length */
+        .max_attr_len                   = MAX_MPU_SIZE-5,                                    /**< Maximum attribute length; gki_cfg must have a corresponding buffer pool that can hold this length */
 #if !defined(CYW20706A2)
-        .max_mtu_size                   = 251                                                /**< Maximum MTU size for GATT connections, should be between 23 and (max_attr_len + 5) */
+        .max_mtu_size                   = MAX_MPU_SIZE                                       /**< Maximum MTU size for GATT connections, should be between 23 and (max_attr_len + 5) */
 #endif
     },
 
@@ -221,6 +228,6 @@ const wiced_bt_cfg_buf_pool_t wiced_bt_hid_cfg_buf_pools[WICED_BT_CFG_NUM_BUF_PO
 /*  { buf_size, buf_count } */
     { 64,       12  },      /* Small Buffer Pool */
     { 100,      30  },      /* Medium Buffer Pool (used for HCI & RFCOMM control messages, min recommended size is 360) */
-    { 300,     100  },      /* Large Buffer Pool  (used for HCI ACL messages) */
-    { 1024,      2  },      /* Extra Large Buffer Pool - Used for avdt media packets and miscellaneous (if not needed, set buf_count to 0) */
+    { 600,      50  },      /* Large Buffer Pool  (used for HCI ACL messages) */
+    { 1024,      0  },      /* Extra Large Buffer Pool - Used for avdt media packets and miscellaneous (if not needed, set buf_count to 0) */
 };

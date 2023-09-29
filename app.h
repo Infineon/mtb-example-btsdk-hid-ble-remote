@@ -52,14 +52,21 @@
 /*******************************************************************************
 * Types and Defines
 *******************************************************************************/
-#define BT_LOCAL_NAME "IFX REMOTE"
+#define BT_LOCAL_NAME "LE REMOTE"
 
 #if is_20835Family
  #define NUM_KEYSCAN_ROWS    5  // Num of Rows in keyscan matrix
  #define NUM_KEYSCAN_COLS    4  // Num of Cols in keyscan matrix
- #define CONNECT_KEY_INDEX   18 // need to find out from hardware
+ #define MUTE_KEY_INDEX      8
+ #define BACK_KEY_INDEX      9
+ #define HOME_KEY_INDEX      14
+#ifdef ANDROID_AUDIO
  #define AUDIO_KEY_INDEX     15
+#else
+ #define AUDIO_KEY_INDEX     16
+#endif
  #define IR_KEY_INDEX        17
+ #define CONNECT_KEY_INDEX   18 // need to find out from hardware
 #else
  #define NUM_KEYSCAN_ROWS    7  // Num of Rows in keyscan matrix
  #define NUM_KEYSCAN_COLS    7  // Num of Cols in keyscan matrix
@@ -214,4 +221,4 @@ void app_transportStateChangeNotification(uint32_t newState);
  *******************************************************************************/
 wiced_result_t app_start();
 
-#endif // __BLEREMOTE_H__
+#endif

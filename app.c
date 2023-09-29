@@ -403,6 +403,9 @@ static uint32_t APP_sleep_handler(wiced_sleep_poll_type_t type )
             ret = WICED_SLEEP_ALLOWED_WITH_SHUTDOWN;
             // a key is down, no deep sleep
             if ( keyscanActive()
+                // If ble connection is established, wait the params update successfully
+                // (slow ble connection parameters with latency mode)
+                || ( hidd_link_is_connected() && !ble_params_is_expected() )
   #ifdef SUPPORT_TOUCHPAD
                 || touchpad_is_active()
   #endif
@@ -617,19 +620,32 @@ static void APP_hci_key_event(uint8_t keyCode, wiced_bool_t keyDown)
     // Translate to app defined key
     switch (keyCode)
     {
-        case KEY_IR:
+#ifdef SUPPORT_IR
+        case HCI_CONTROL_HIDD_KEY_IR:
             keyCode = IR_KEY_INDEX;
             break;
-
-        case KEY_AUDIO:
+#endif
+        case HCI_CONTROL_HIDD_KEY_AUDIO:
             keyCode = AUDIO_KEY_INDEX;
             break;
 
-        case KEY_CONNECT:
+        case HCI_CONTROL_HIDD_KEY_CONNECT:
             keyCode = CONNECT_KEY_INDEX;
             break;
 
-//        case KEY_MOTION:          // ignored
+        case HCI_CONTROL_HIDD_KEY_MUTE:
+            keyCode = MUTE_KEY_INDEX;
+            break;
+
+        case HCI_CONTROL_HIDD_KEY_HOME:
+            keyCode = HOME_KEY_INDEX;
+            break;
+
+        case HCI_CONTROL_HIDD_KEY_BACK:
+            keyCode = BACK_KEY_INDEX;
+            break;
+
+//        case HCI_CONTROL_HIDD_KEY_MOTION:          // ignored
         // unknown key, ignored
         default:
             WICED_BT_TRACE("\nFunction not supported");
@@ -911,6 +927,9 @@ wiced_result_t app_start(void)
   #else
     char audio_capa=HCI_CONTROL_HIDD_AUDIO_SUPPORT | HCI_CONTROL_HIDD_AUDIO_8K | HCI_CONTROL_HIDD_AUDIO_16K | HCI_CONTROL_HIDD_AUDIO_MSBC;
   #endif
+ #endif
+ #ifdef SUPPORT_DIGITAL_MIC
+   audio_capa |= HCI_CONTROL_HIDD_AUDIO_DIGITAL_MIC;
  #endif
 #else
     char audio_capa=0;

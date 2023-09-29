@@ -46,6 +46,7 @@
 
 /////////////////////////////////////////////////////////////////////////////////
 #define AUDIO_FIFO_CNT    20  // 30 in atv_o_remote
+#define AUDIO_PDM_MULTIPLIER            20     // Audio PDM Gain multiplier. PDM does not have hardware amplifier. We need to amplify in software.
 
 #define AUDIO_START_DELAY_IN_MS         100    // wait for 100 ms to start send audio data
 #define AUDIO_ADC_GAIN_IN_DB            30     // Audio ADC Gain in dB, When DRC is disabled 21 dB is recommended
@@ -235,6 +236,12 @@ void audio_init(void (*activityDetectedPtr)())
 #endif
 #ifdef SUPPORT_DIGITAL_MIC
     WICED_BT_TRACE("\ndigtalMIC clk=p%d, data=p%d", PDM_CLK, PDM_DATA);
+
+    // The GPIO might have been configured for LED by platfrom.c at startup. We need to reconfigure the pin
+    // to ensure the GPIO is configured propoerly.
+    wiced_hal_gpio_configure_pin(PDM_CLK, GPIO_INPUT_ENABLE, 0);
+    wiced_hal_gpio_configure_pin(PDM_DATA, GPIO_INPUT_ENABLE, 0);
+
     /* assign PDM pins */
     hidd_mic_assign_mic_pdm_pins(PDM_CLK, PDM_DATA); // pdm clk & data pin assignment
 #endif
@@ -273,6 +280,30 @@ static void audio_send_data(uint8_t * ptr, uint16_t len)
 }
 
 /////////////////////////////////////////////////////////////////////////////////
+/// This function amplifies audio data
+/////////////////////////////////////////////////////////////////////////////////
+void audio_amplify_data(int16_t * p_data, uint16_t cnt, uint32_t multiplier)
+{
+    int32_t data;
+    while (cnt--)
+    {
+        data = *p_data * multiplier;
+
+        // check for data range
+        if(data > 32767)
+        {
+            data = 32767;
+        }
+        else if(data < -32768)
+        {
+            data = -32768;
+        }
+
+        *p_data++ = data;
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////
 /// This function process the voice data event from queue
 /////////////////////////////////////////////////////////////////////////////////
 void audio_procEvtVoice()
@@ -282,20 +313,20 @@ void audio_procEvtVoice()
         hidd_voice_report_t * audioPtr = (hidd_voice_report_t *) audio.voiceEvent.userDataPtr;
         uint8_t audio_outData[DECODE_BUFF_SIZE];
         uint8_t * dataPtr = audio_outData;
-#ifdef ANDROID_AUDIO_1_0
-        uint16_t mtu_size = atv_supports_ver(1) ? AUDIO_MTU_SIZE : AUDIO_MTU_BASIC_SIZE;
-#else
- #define mtu_size AUDIO_MTU_SIZE
+
+#ifdef SUPPORT_DIGITAL_MIC
+       // PDM does not have hardware amplifier. We need amplify the audio
+       audio_amplify_data(audioPtr->dataBuffer, audioPtr->dataCnt, AUDIO_PDM_MULTIPLIER);
 #endif
 
         uint16_t len = hidd_mic_audio_get_audio_out_data(audioPtr, dataPtr);
 
         // as long as the len is larger than audio MTU size, we fragement the data
-        while (len >= mtu_size)
+        while (len >= AUDIO_MTU_SIZE)
         {
-            audio_send_data(dataPtr, mtu_size);
-            dataPtr += mtu_size;
-            len -= mtu_size;
+            audio_send_data(dataPtr, AUDIO_MTU_SIZE);
+            dataPtr += AUDIO_MTU_SIZE;
+            len -= AUDIO_MTU_SIZE;
         };
         // if any remainding residual data, finish it up
         if (len)
